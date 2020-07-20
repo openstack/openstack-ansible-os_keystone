@@ -333,6 +333,11 @@ keystone_sp: {}
 #keystone_sp:
 #  cert_duration_years: 5
 #  apache_mod: shibboleth  #or mod_auth_openidc
+#  cadf_notifications: false
+#  cadf_notifications_opt_out:
+#    - identity.authenticate.failed
+#    - identity.authenticate.pending
+#    - identity.authenticate.success
 #  trusted_dashboard_list:
 #    - "https://{{ external_lb_vip_address }}/auth/websso/"
 #    - "https://{{ horizon_server_name }}/auth/websso/"
