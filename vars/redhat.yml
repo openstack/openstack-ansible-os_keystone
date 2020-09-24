@@ -42,7 +42,6 @@ keystone_apache_distro_packages:
   - httpd
   - httpd-tools
   - mod_ssl
-  - mod_proxy_uwsgi
 
 keystone_nginx_distro_packages:
   - nginx

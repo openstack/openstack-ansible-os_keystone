@@ -25,6 +25,6 @@
     nodeset: ubuntu-bionic
 
 - job:
-    name: openstack-ansible-uw_apache-centos-7
+    name: openstack-ansible-uw_apache-centos-8
     parent: openstack-ansible-uw_apache
-    nodeset: centos-7
+    nodeset: centos-8
