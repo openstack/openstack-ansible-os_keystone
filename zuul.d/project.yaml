@@ -25,7 +25,9 @@
       jobs:
         - openstack-ansible-uw_apache-centos-8
         - openstack-ansible-uw_apache-ubuntu-bionic
+        - openstack-ansible-uw_apache-ubuntu-focal
     gate:
       jobs:
         - openstack-ansible-uw_apache-centos-8
         - openstack-ansible-uw_apache-ubuntu-bionic
+        - openstack-ansible-uw_apache-ubuntu-focal

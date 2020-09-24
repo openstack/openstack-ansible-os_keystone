@@ -25,6 +25,11 @@
     nodeset: ubuntu-bionic
 
 - job:
+    name: openstack-ansible-uw_apache-ubuntu-focal
+    parent: openstack-ansible-uw_apache
+    nodeset: ubuntu-focal
+
+- job:
     name: openstack-ansible-uw_apache-centos-8
     parent: openstack-ansible-uw_apache
     nodeset: centos-8
