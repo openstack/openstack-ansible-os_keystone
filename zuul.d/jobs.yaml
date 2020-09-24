@@ -28,3 +28,8 @@
     name: openstack-ansible-uw_apache-centos-7
     parent: openstack-ansible-uw_apache
     nodeset: centos-7
+
+- job:
+    name: openstack-ansible-uw_apache-centos-8
+    parent: openstack-ansible-uw_apache
+    nodeset: centos-8

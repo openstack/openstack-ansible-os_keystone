@@ -38,11 +38,12 @@ keystone_service_distro_packages:
   - uwsgi
   - "{{ ansible_distribution_major_version is version('8', '<') | ternary('uwsgi-plugin-python', 'uwsgi-plugin-python3') }}"
 
-keystone_apache_distro_packages:
-  - httpd
-  - httpd-tools
-  - mod_ssl
-  - mod_proxy_uwsgi
+keystone_apache_distro_packages: |-
+  {% set packages = ['httpd', 'httpd-tools', 'mod_ssl'] %}
+  {% if ansible_distribution_major_version is version('8', '<') %}
+  {%   set _ = packages.append('mod_proxy_uwsgi') %}
+  {% endif %}
+  {{ packages }}
 
 keystone_nginx_distro_packages:
   - nginx
