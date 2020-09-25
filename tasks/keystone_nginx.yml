@@ -18,6 +18,7 @@
     name: "{{ keystone_system_service_name }}"
     state: stopped
   failed_when: false
+  when: ('horizon_all' in groups and inventory_hostname not in groups['horizon_all']) or ('horizon_all' not in groups)
 
 - name: Disable default configuration
   file:
@@ -34,6 +35,18 @@
   notify:
     - Manage LB
     - Restart web server
+
+- name: Ensure nginx does not listen on 80 port
+  replace:
+    path: /etc/nginx/nginx.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+    validate: nginx -t -c %s
+  with_items:
+    - regexp: '(\s+listen\s+)[\[,\],:]+80'
+      replace: '\1 [::1]:8008'
+    - regexp: '(\s+listen\s+)80'
+      replace: '\1 127.0.0.1:8008'
 
 - name: Ensure configuration directories exist
   file:
