@@ -29,11 +29,11 @@
 - name: Copy Shibboleth SP key-pair (if provided)
   copy:
     content: "{{ item.content }}"
-    dest: "{{ item.dest }}"
+    dest: "{{ item.dest }}"  # noqa 206
     mode: "{{ item.mode|default('0640') }}"
   when:
     - _keystone_is_first_play_host
-    - item.content != ''
+    - item.content | length > 0
   with_items:
     - { content: "{{ shibboleth_cert_user_content }}", dest: "/etc/shibboleth/sp-cert.pem" }
     - { content: "{{ shibboleth_key_user_content }}", dest: "/etc/shibboleth/sp-key.pem" }

@@ -17,9 +17,8 @@
   file:
     dest: "{{ keystone_idp.cerfile }}"
     state: "absent"
-  when: >
-    keystone_idp.regen_cert == true or
-    keystone_idp.regen_cert == "True"
+  when:
+    - keystone_idp.regen_cert | bool
 
 - name: Create IdP self-signed ssl cert
   command: >
