@@ -9,7 +9,19 @@ debug = {{ debug }}
 public_endpoint = {{ keystone_public_endpoint }}
 {% endif %}
 fatal_deprecations = {{ keystone_fatal_deprecations }}
-
+{% if keystone_sp != {} and (keystone_sp.cadf_notifications is defined) and (keystone_sp.cadf_notifications | bool) %}
+{% set cadf_notifications = true %}
+{% else %}
+{% set cadf_notifications = false %}
+{% endif %}
+{% if cadf_notifications | bool %}
+notification_format = cadf
+{% if keystone_sp.cadf_notifications_opt_out is defined %}
+{% for opt_out in keystone_sp.cadf_notifications_opt_out %}
+notification_opt_out = {{ opt_out }}
+{% endfor %}
+{% endif %}
+{% endif %}
 
 ## Oslo.Messaging RPC
 transport_url = {{ keystone_oslomsg_rpc_transport }}://{% for host in keystone_oslomsg_rpc_servers.split(',') %}{{ keystone_oslomsg_rpc_userid }}:{{ keystone_oslomsg_rpc_password }}@{{ host }}:{{ keystone_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ keystone_oslomsg_rpc_vhost }}{% if keystone_oslomsg_rpc_use_ssl | bool %}?ssl=1{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
@@ -18,7 +30,18 @@ transport_url = {{ keystone_oslomsg_rpc_transport }}://{% for host in keystone_o
 ssl = {{ keystone_oslomsg_rpc_use_ssl }}
 
 [oslo_messaging_notifications]
-driver = {{ (keystone_ceilometer_enabled | bool) | ternary('messagingv2', 'noop') }}
+{% if keystone_ceilometer_enabled | bool %}
+driver = messagingv2
+{% set notification_driver = true %}
+{% endif %}
+{% if cadf_notifications | bool %}
+driver = log
+{% set notification_driver = true %}
+{% endif %}
+{% if notification_driver is not defined or notification_driver == false | bool %}
+driver = noop
+{% endif %}
+
 transport_url = {{ keystone_oslomsg_notify_transport }}://{% for host in keystone_oslomsg_notify_servers.split(',') %}{{ keystone_oslomsg_notify_userid }}:{{ keystone_oslomsg_notify_password }}@{{ host }}:{{ keystone_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ keystone_oslomsg_notify_vhost }}{% if keystone_oslomsg_notify_use_ssl | bool %}?ssl=1{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 {% if keystone_cache_servers | length > 0 %}
