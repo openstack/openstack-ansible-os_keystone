@@ -21,8 +21,6 @@
     group: "{{ item.group|default(keystone_system_group_name) }}"
     mode: "{{ item.mode|default('0755') }}"
   with_items:
-    - { path: "/etc/pki/tls/certs", owner: "root", group: "root" }
-    - { path: "/etc/pki/tls/private", owner: "root", group: "root" }
     - { path: "/var/lock/keystone", mode: "2755" }
     - { path: "/var/log/httpd", mode: "2755" }
   when:
@@ -34,8 +32,6 @@
     dest: "{{ item.dest }}"
     state: "link"
   with_items:
-    - { src: "/etc/pki/tls/certs", dest: "/etc/ssl/certs" }
-    - { src: "/etc/pki/tls/private", dest: "/etc/ssl/private" }
     - { src: "/var/log/httpd", dest: "/var/log/apache2" }
   when:
     - ansible_pkg_mgr in ['yum', 'dnf']
