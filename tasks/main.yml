@@ -55,6 +55,8 @@
       (keystone_sp.apache_mod is undefined or
       (keystone_sp.apache_mod is defined and keystone_sp.apache_mod != 'mod_auth_openidc'))
       ) | ternary('true', 'false') }}"
+  tags:
+    - always
 
 - name: Fact for apache module mod_auth_openidc to be installed
   set_fact:
@@ -62,6 +64,8 @@
       "{{ (keystone_sp != {} and
       keystone_sp.apache_mod is defined and keystone_sp.apache_mod == 'mod_auth_openidc')
       | ternary('true', 'false') }}"
+  tags:
+    - always
 
 - import_tasks: db_setup.yml
   when:
