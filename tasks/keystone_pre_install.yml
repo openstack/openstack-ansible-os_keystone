@@ -125,8 +125,15 @@
         owner: root
         group: root
       - path: "/var/www/cgi-bin/keystone"
+      - path: "{{ keystone_security_txt_dir }}"
       - path: "/etc/ansible/facts.d"
         owner: root
         group: root
   delegate_to: "{{ item[0] }}"
   when: _keystone_is_first_play_host
+
+- name: Create security.txt file
+  copy:
+    content: "{{ keystone_security_txt_content }}"
+    dest: "{{ keystone_security_txt_dir }}/security.txt"
+  when: keystone_security_txt_content is defined
