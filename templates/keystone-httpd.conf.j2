@@ -115,6 +115,20 @@ Listen {{ keystone_service_port }}
     ProxyPass /Shibboleth.sso !
     {% endif -%}
 
+    {% if keystone_security_txt_content is defined %}
+    AliasMatch "^/(.*)/security.txt$" "{{ keystone_security_txt_dir }}/security.txt"
+
+    <Directory "{{ keystone_security_txt_dir }}">
+        Options None
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ProxyPass /security.txt !
+    ProxyPass /.well-known/security.txt !
+    {%- endif %}
+
     ProxyPass / uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}/
 
 </VirtualHost>
