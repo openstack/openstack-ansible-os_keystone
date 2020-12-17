@@ -26,6 +26,7 @@
   delay: 10
   with_dict: "{{ keystone_ldap }}"
   delegate_to: "{{ keystone_service_setup_host }}"
+  no_log: true
   when:
     - "_keystone_is_last_play_host"
   vars:
@@ -39,6 +40,7 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
   with_dict: "{{ keystone_ldap }}"
+  no_log: true
   notify:
     - Manage LB
     - Restart uWSGI
