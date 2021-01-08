@@ -22,13 +22,12 @@ debug: False
 keystone_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
 keystone_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((keystone_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
 
-# Set the package install state for distribution and pip packages
+# Set the package install state for distribution packages
 # Options are 'present' and 'latest'
-keystone_package_state: "latest"
-keystone_pip_package_state: "latest"
+keystone_package_state: "{{ package_state | default('latest') }}"
 
 # Set installation method.
-keystone_install_method: "source"
+keystone_install_method: "{{ service_install_method | default('source') }}"
 keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
 
 # Centos shibboleth repository options
@@ -103,7 +102,7 @@ keystone_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter 
 keystone_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 keystone_galera_user: keystone
 keystone_galera_database: keystone
-keystone_galera_port: 3306
+keystone_galera_port: "{{ galera_port | default('3306') }}"
 keystone_database_connection_string: >-
   mysql+pymysql://{{ keystone_galera_user }}:{{ keystone_container_mysql_password }}@{{ keystone_galera_address }}:{{keystone_galera_port}}/{{ keystone_galera_database }}?charset=utf8{% if keystone_galera_use_ssl | bool %}&ssl_ca={{ keystone_galera_ssl_ca_cert }}{% endif %}
 ## Database SSL
@@ -155,7 +154,7 @@ keystone_admin_description: Admin Tenant
 
 ## Service Type and Data
 keystone_service_setup: true
-keystone_service_region: RegionOne
+keystone_service_region: "{{ service_region | default('RegionOne') }}"
 keystone_service_name: keystone
 keystone_service_port: 5000
 keystone_service_type: identity
@@ -279,7 +278,7 @@ keystone_memcached_servers: "{{ memcached_servers }}"
 # The cache_servers default backend is memcached, so this variable
 # should point to a list of memcached servers.
 # If empty, caching is disabled.
-keystone_cache_servers: []
+keystone_cache_servers: "{{ keystone_memcached_servers.split(',') }}"
 
 ## LDAP Section
 # Define Keystone LDAP domain configuration here.
@@ -482,10 +481,10 @@ keystone_sp: {}
 #                    user:
 #                      name: '{0}'
 
-keystone_service_in_ldap: false
+keystone_service_in_ldap: "{{ service_ldap_backend_enabled | default(False) }}"
 
 # Keystone notification settings
-keystone_ceilometer_enabled: false
+keystone_ceilometer_enabled: "{{ (groups['ceilometer_all'] is defined) and (groups['ceilometer_all'] | length > 0) }}"
 
 # Common pip packages
 keystone_pip_packages:
