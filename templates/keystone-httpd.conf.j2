@@ -62,6 +62,9 @@ Listen {{ keystone_service_port }}
     {% if keystone_sp.trusted_idp_list.0.oidc_default_url is defined -%}
     OIDCDefaultURL {{ keystone_sp.trusted_idp_list.0.oidc_default_url }}
     {% endif %}
+    {% if keystone_sp.trusted_idp_list.0.oidc_claim_delimiter is defined -%}
+    OIDCClaimDelimiter "{{ keystone_sp.trusted_idp_list.0.oidc_claim_delimiter }}"
+    {% endif %}
 
     <Location /v3/OS-FEDERATION/identity_providers/{{ keystone_sp.trusted_idp_list.0.name }}/protocols/openid/auth>
       Require valid-user
