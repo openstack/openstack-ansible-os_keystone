@@ -41,7 +41,6 @@ keystone_git_repo: https://opendev.org/openstack/keystone
 keystone_git_install_branch: master
 keystone_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
 keystone_git_constraints:
-  - "git+{{ keystone_git_repo }}@{{ keystone_git_install_branch }}#egg=keystone"
   - "--constraint {{ keystone_upper_constraints_url }}"
 
 keystone_pip_install_args: "{{ pip_install_options | default('') }}"
@@ -488,7 +487,7 @@ keystone_ceilometer_enabled: "{{ (groups['ceilometer_all'] is defined) and (grou
 
 # Common pip packages
 keystone_pip_packages:
-  - keystone
+  - "git+{{ keystone_git_repo }}@{{ keystone_git_install_branch }}#egg=keystone"
   - ldappool
   - osprofiler
   - PyMySQL
