@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Add LDAP domains
-  openstack.cloud.os_keystone_domain:
+  openstack.cloud.identity_domain:
     cloud: default
     state: present
     name: "{{ item.key }}"
