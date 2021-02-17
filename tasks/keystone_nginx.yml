@@ -36,18 +36,6 @@
     - Manage LB
     - Restart web server
 
-- name: Ensure nginx does not listen on 80 port
-  replace:
-    path: /etc/nginx/nginx.conf
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace }}"
-    validate: nginx -t -c %s
-  with_items:
-    - regexp: '(\s+listen\s+)[\[,\],:]+80'
-      replace: '\1 [::1]:8008'
-    - regexp: '(\s+listen\s+)80'
-      replace: '\1 127.0.0.1:8008'
-
 - name: Ensure configuration directories exist
   file:
     path: "{{ item }}"
@@ -101,6 +89,21 @@
     state: link
   with_items: "{{ keystone_services.keys() | list }}"
   when: ansible_os_family == "Debian"
+  notify:
+    - Manage LB
+    - Restart web server
+
+- name: Ensure nginx does not listen on 80 port
+  replace:
+    path: /etc/nginx/nginx.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+    validate: nginx -t -c %s
+  with_items:
+    - regexp: '(\s+listen\s+)[\[,\],:]+80'
+      replace: '\1 [::1]:8008'
+    - regexp: '(\s+listen\s+)80'
+      replace: '\1 127.0.0.1:8008'
   notify:
     - Manage LB
     - Restart web server
