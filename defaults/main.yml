@@ -20,7 +20,7 @@ debug: False
 # for the service setup. The host must already have
 # clouds.yaml properly configured.
 keystone_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-keystone_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((keystone_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+keystone_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((keystone_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
 
 # Set the package install state for distribution packages
 # Options are 'present' and 'latest'
@@ -97,7 +97,7 @@ keystone_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }
 
 ## Database info
 keystone_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
-keystone_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((keystone_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+keystone_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((keystone_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
 keystone_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 keystone_galera_user: keystone
 keystone_galera_database: keystone
@@ -235,7 +235,7 @@ keystone_nginx_extra_conf:
 keystone_wsgi_threads: 1
 ## Cap the maximun number of processes when a user value is unspecified.
 keystone_wsgi_processes_max: 16
-keystone_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, keystone_wsgi_processes_max] | min }}"
+keystone_wsgi_processes: "{{ [[ansible_facts['processor_vcpus']|default(1), 1] | max * 2, keystone_wsgi_processes_max] | min }}"
 keystone_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 
 keystone_uwsgi_ports:

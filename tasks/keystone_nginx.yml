@@ -67,7 +67,7 @@
     group: root
     owner: root
   when:
-    - ansible_pkg_mgr == 'portage'
+    - ansible_facts['pkg_mgr'] == 'portage'
   notify:
     - Manage LB
     - Restart web server
@@ -88,7 +88,7 @@
     path: "/etc/nginx/sites-enabled/{{ item }}.conf"
     state: link
   with_items: "{{ keystone_services.keys() | list }}"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
   notify:
     - Manage LB
     - Restart web server

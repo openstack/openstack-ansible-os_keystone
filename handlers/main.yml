@@ -18,7 +18,7 @@
     name: "{{ (keystone_web_server == 'apache') | ternary(keystone_system_service_name, 'nginx') }}"
     enabled: yes
     state: restarted
-    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+    daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _restart
   until: _restart is success
   retries: 5
@@ -45,7 +45,7 @@
   service:
     name: "{{ item }}"
     state: "stopped"
-    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+    daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _stop
   until: _stop is success
   retries: 5
@@ -60,7 +60,7 @@
     name: "{{ item }}"
     enabled: yes
     state: "started"
-    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+    daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _start
   until: _start is success
   retries: 5
@@ -89,7 +89,7 @@
     name: "shibd"
     enabled: yes
     state: "restarted"
-    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+    daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _restart
   until: _restart is success
   retries: 5
@@ -101,7 +101,7 @@
       debian: nc -q 1 $(awk '/^\-l/ {print $2}' "/etc/memcached.conf" | awk -F, '{print $1}') $(awk '/^\-p/ {print $2}' "/etc/memcached.conf")
       redhat: nc $(awk -F '-l' '/^OPTIONS/ {print $2}' "/etc/sysconfig/memcached" | awk -F ',' '{gsub(/"/, "", $1); print $1}' | awk -F '-' '{print $1}') 11211
       suse: nc -w 1 $(awk -F '-l' '/^MEMCACHED_PARAMS/ {print $2}' "/etc/sysconfig/memcached" | awk -F ',' '{gsub(/"/, "", $1); print $1}' | awk -F '-' '{print $1}') 11211
-  shell: "echo 'flush_all' | {{ nc_command.get(ansible_os_family | lower) }}"
+  shell: "echo 'flush_all' | {{ nc_command.get(ansible_facts['os_family'] | lower) }}"
   delegate_to: "{{ item }}"
   with_items: "{{ groups.memcached_all }}"
   listen: flush cache

@@ -56,7 +56,7 @@ keystone_sp_distro_packages:
                                                       'shibboleth-sp') }}"
 
 keystone_developer_mode_distro_packages:
-  - "{{ (ansible_distribution_version is version ('42', '>=')) | ternary('patterns-openSUSE-devel_basis', 'patterns-devel-base-devel_basis') }}"
+  - "{{ (ansible_facts['distribution_version'] is version ('42', '>=')) | ternary('patterns-openSUSE-devel_basis', 'patterns-devel-base-devel_basis') }}"
 
 keystone_oslomsg_amqp1_distro_packages:
   - cyrus-sasl

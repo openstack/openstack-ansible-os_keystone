@@ -51,7 +51,7 @@
     state: "{{ item.state }}"
   with_items: "{{ keystone_apache_modules }}"
   when:
-    - ansible_pkg_mgr in ['apt', 'zypper']
+    - ansible_facts['pkg_mgr'] in ['apt', 'zypper']
   notify:
     - Manage LB
     - Restart web server
@@ -64,7 +64,7 @@
     line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
     state: "present"
   when:
-   - ansible_pkg_mgr in ['yum', 'dnf']
+   - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
   notify:
     - Manage LB
     - Restart web server
@@ -93,7 +93,7 @@
 - name: Ensure Apache ServerName
   lineinfile:
     dest: "{{ keystone_apache_conf }}"
-    line: "ServerName {{ ansible_hostname }}"
+    line: "ServerName {{ ansible_facts['hostname'] }}"
   notify:
     - Manage LB
     - Restart web server
