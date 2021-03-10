@@ -58,20 +58,6 @@
     - Manage LB
     - Restart web server
 
-# NOTE(prometheanfire): Nginx needs to be told to load configs from keystone_nginx_conf_path
-- name: Configure nginx.conf
-  copy:
-    src: nginx.conf
-    dest: /etc/nginx/nginx.conf
-    mode: "0644"
-    group: root
-    owner: root
-  when:
-    - ansible_facts['pkg_mgr'] == 'portage'
-  notify:
-    - Manage LB
-    - Restart web server
-
 # Configure app
 - name: Configure virtual hosts
   template:

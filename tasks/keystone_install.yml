@@ -24,7 +24,7 @@
     - { path: "/var/lock/keystone", mode: "2755" }
     - { path: "/var/log/httpd", mode: "2755" }
   when:
-    - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+    - ansible_facts['pkg_mgr'] == 'dnf'
 
 - name: Create system links
   file:
@@ -34,7 +34,7 @@
   with_items:
     - { src: "/var/log/httpd", dest: "/var/log/apache2" }
   when:
-    - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+    - ansible_facts['pkg_mgr'] == 'dnf'
 
 - name: Add shibboleth repo
   yum_repository:
@@ -44,7 +44,7 @@
     gpgkey: "{{ keystone_centos_shibboleth_key }}"
     gpgcheck: yes
   when:
-    - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+    - ansible_facts['pkg_mgr'] == 'dnf'
     - keystone_sp != {}
 
 - name: Add NGINX repository keys
@@ -52,7 +52,7 @@
     key: "{{ keystone_centos_nginx_key }}"
     state: present
   when:
-    - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+    - ansible_facts['pkg_mgr'] == 'dnf'
     - keystone_web_server == 'nginx'
   register: add_nginx_key
   until: add_nginx_key is success
@@ -65,7 +65,7 @@
     description: 'nginx repo'
     baseurl: "{{ keystone_centos_nginx_mirror }}"
   when:
-    - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+    - ansible_facts['pkg_mgr'] == 'dnf'
     - keystone_web_server == 'nginx'
   register: add_nginx_repo
   until: add_nginx_repo is success
@@ -87,9 +87,6 @@
     name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages) }}"
     state: absent
     autoremove: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
-    newuse: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
-    changed_use: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
-    noreplace: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
   when: "(is_metal is undefined) or
          not (is_metal | bool)"
 
@@ -97,11 +94,8 @@
   package:
     name: "{{ keystone_package_list }}"
     state: "{{ keystone_package_state }}"
-    update_cache: "{{ (ansible_facts['pkg_mgr'] in ['apt', 'zypper']) | ternary('yes', omit) }}"
+    update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
     cache_valid_time: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary(cache_timeout, omit) }}"
-    newuse: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
-    changed_use: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
-    noreplace: "{{ (ansible_facts['pkg_mgr'] == 'portage') | ternary('yes', omit) }}"
   register: install_packages
   until: install_packages is success
   retries: 5

@@ -100,7 +100,6 @@
     nc_command:
       debian: nc -q 1 $(awk '/^\-l/ {print $2}' "/etc/memcached.conf" | awk -F, '{print $1}') $(awk '/^\-p/ {print $2}' "/etc/memcached.conf")
       redhat: nc $(awk -F '-l' '/^OPTIONS/ {print $2}' "/etc/sysconfig/memcached" | awk -F ',' '{gsub(/"/, "", $1); print $1}' | awk -F '-' '{print $1}') 11211
-      suse: nc -w 1 $(awk -F '-l' '/^MEMCACHED_PARAMS/ {print $2}' "/etc/sysconfig/memcached" | awk -F ',' '{gsub(/"/, "", $1); print $1}' | awk -F '-' '{print $1}') 11211
   shell: "echo 'flush_all' | {{ nc_command.get(ansible_facts['os_family'] | lower) }}"
   delegate_to: "{{ item }}"
   with_items: "{{ groups.memcached_all }}"
