@@ -28,7 +28,7 @@ keystone_package_state: "{{ package_state | default('latest') }}"
 
 # Set installation method.
 keystone_install_method: "{{ service_install_method | default('source') }}"
-keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
+keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 # Centos shibboleth repository options
 keystone_centos_shibboleth_mirror: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/"
