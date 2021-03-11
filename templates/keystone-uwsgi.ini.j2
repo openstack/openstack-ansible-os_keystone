@@ -6,7 +6,7 @@ gid = {{ keystone_system_group_name }}
 {% if keystone_install_method == 'source' %}
 virtualenv = /openstack/venvs/keystone-{{ keystone_venv_tag }}
 {% endif %}
-{% if keystone_install_method == 'distro' and (ansible_os_family | lower) in ['debian', 'suse' ] %}
+{% if keystone_install_method == 'distro' and (ansible_os_family | lower) == 'debian' %}
 plugin = python3
 {% endif %}
 wsgi-file = {{ keystone_bin }}/{{ item }}

@@ -44,14 +44,14 @@
     - Restart web server
 
 ## NOTE(cloudnull):
-## Module enable/disable process is only functional on Debian and SUSE based systems.
+## Module enable/disable process is only functional on Debian
 - name: Enable/disable apache2 modules
   apache2_module:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ keystone_apache_modules }}"
   when:
-    - ansible_facts['pkg_mgr'] in ['apt', 'zypper']
+    - ansible_facts['pkg_mgr'] == 'apt'
   notify:
     - Manage LB
     - Restart web server
@@ -64,7 +64,7 @@
     line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
     state: "present"
   when:
-   - ansible_facts['pkg_mgr'] in ['yum', 'dnf']
+   - ansible_facts['pkg_mgr'] == 'dnf'
   notify:
     - Manage LB
     - Restart web server
