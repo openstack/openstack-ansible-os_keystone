@@ -49,12 +49,27 @@
     - Restart uWSGI
     - Restart web server
 
-- name: Implement policy.json if there are overrides configured
-  copy:
-    content: "{{ keystone_policy_overrides | to_nice_json }}"
-    dest: "/etc/keystone/policy.json"
+- name: Implement policy.yaml if there are overrides configured
+  config_template:
+    content: "{{ keystone_policy_overrides }}"
+    dest: "/etc/keystone/policy.yaml"
+    owner: "root"
+    group: "{{ keystone_system_group_name }}"
+    mode: "0640"
+    config_type: yaml
   when:
-    - keystone_policy_overrides != {}
+    - keystone_policy_overrides | length > 0
+  tags:
+    - keystone-policy-override
+
+- name: Remove legacy policy.yaml file
+  file:
+    path: "/etc/keystone/policy.yaml"
+    state: absent
+  when:
+    - keystone_policy_overrides | length == 0
+  tags:
+    - keystone-policy-override
 
 # NOTE(cloudnull): This is using "cp" instead of copy with a remote_source
 #                  because we only want to copy the original files once. and we
