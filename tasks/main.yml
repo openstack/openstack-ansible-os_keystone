@@ -201,7 +201,7 @@
     _service_setup_host: "{{ keystone_service_setup_host }}"
     _service_setup_host_python_interpreter: "{{ keystone_service_setup_host_python_interpreter }}"
     _project_name: "{{ keystone_service_tenant_name }}"
-    _project_description: "{{ keystone_service_description }}"
+    _project_description: "{{ keystone_service_project_description }}"
     _role_name: "{{ keystone_default_role_name }}"
     _service_region: "{{ keystone_service_region }}"
     _service_catalog:

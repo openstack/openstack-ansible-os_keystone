@@ -159,6 +159,7 @@ keystone_service_port: 5000
 keystone_service_type: identity
 keystone_service_description: "Keystone Identity Service"
 keystone_service_tenant_name: service
+keystone_service_project_description: "OpenStack Services"
 
 keystone_service_proto: http
 keystone_service_publicuri_proto: "{{ openstack_service_publicuri_proto | default(keystone_service_proto) }}"
