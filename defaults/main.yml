@@ -126,6 +126,8 @@ keystone_oslomsg_rpc_port: "{{ oslomsg_rpc_port | default('5672') }}"
 keystone_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
 keystone_oslomsg_rpc_userid: keystone
 keystone_oslomsg_rpc_vhost: /keystone
+keystone_oslomsg_rpc_ssl_version: "{{ oslomsg_rpc_ssl_version | default('TLSv1_2') }}"
+keystone_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
 # Notify
 keystone_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
@@ -137,6 +139,8 @@ keystone_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
 keystone_oslomsg_notify_userid: "{{ keystone_oslomsg_rpc_userid }}"
 keystone_oslomsg_notify_password: "{{ keystone_oslomsg_rpc_password }}"
 keystone_oslomsg_notify_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
+keystone_oslomsg_notify_ssl_version: "{{ oslomsg_notify_ssl_version | default('TLSv1_2') }}"
+keystone_oslomsg_notify_ssl_ca_file: "{{ oslomsg_notify_ssl_ca_file | default('') }}"
 
 ## (Qdrouterd) info
 # TODO(ansmith): Change structure when more backends will be supported
