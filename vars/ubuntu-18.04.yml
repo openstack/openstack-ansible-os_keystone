@@ -55,9 +55,11 @@ keystone_idp_distro_packages:
   - ssl-cert
   - xmlsec1
 
-keystone_sp_distro_packages:
-  - libapache2-mod-auth-openidc
-  - libapache2-mod-shib
+keystone_sp_apache_mod_packages:
+  - name: libapache2-mod-shib2
+    state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
+  - name: libapache2-mod-auth-openidc
+    state: "{{ keystone_sp_apache_mod_auth_openidc | ternary('present', 'absent') }}"
 
 keystone_developer_mode_distro_packages:
   - build-essential

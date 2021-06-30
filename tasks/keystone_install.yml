@@ -110,6 +110,12 @@
     - Manage LB
     - Restart web server
 
+- name: Install/remove apache mod packages for federated authentication
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items: "{{ keystone_sp_apache_mod_packages }}"
+
 - name: Install the python venv
   import_role:
     name: "python_venv_build"
