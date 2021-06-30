@@ -49,9 +49,11 @@ keystone_nginx_distro_packages:
 keystone_idp_distro_packages:
   - xmlsec1
 
-keystone_sp_distro_packages:
-  - "{{ keystone_sp_apache_mod_auth_openidc | ternary('mod_auth_openidc',
-                                                      'shibboleth') }}"
+keystone_sp_apache_mod_packages:
+  - name: shibboleth
+    state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
+  - name: mod-auth-openidc
+    state: "{{ keystone_sp_apache_mod_auth_openidc | ternary('present', 'absent') }}"
 
 keystone_developer_mode_distro_packages:
   - gcc
