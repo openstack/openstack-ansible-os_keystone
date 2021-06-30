@@ -37,7 +37,7 @@ Listen {{ keystone_service_port }}
     {% if keystone_sp_apache_mod_auth_openidc -%}
     OIDCClaimPrefix "{{ keystone_sp.trusted_idp_list.0.oidc_claim_prefix | default('OIDC-') }}"
     OIDCResponseType "{{ keystone_sp.trusted_idp_list.0.oidc_resp_type | default('id_token') }}"
-    OIDCScope "{{ keystone_sp.trusted_idp_list.0.idc_scope | default('openid email profile') }}"
+    OIDCScope "{{ keystone_sp.trusted_idp_list.0.idc_scope | default(keystone_sp.trusted_idp_list.0.oidc_scope | default('openid email profile')) }}"
     OIDCProviderMetadataURL {{ keystone_sp.trusted_idp_list.0.oidc_provider_metadata_url }}
     OIDCClientID {{ keystone_sp.trusted_idp_list.0.oidc_client_id }}
     OIDCClientSecret {{ keystone_sp.trusted_idp_list.0.oidc_client_secret }}
