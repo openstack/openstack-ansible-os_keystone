@@ -13,22 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# note that these tasks will run when the id/name parameter is present.
-# Providing the id/name without the other required params is a user error.
-
-# TODO: Revisit this method when Ansible 2 releases
-# User with_subelements instead, but in v1.x it's broken
 - name: Ensure existence of federation objects
   delegate_to: "{{ keystone_service_setup_host }}"
   vars:
     ansible_python_interpreter: "{{ keystone_service_setup_host_python_interpreter }}"
   block:
-    - name: Set keystone_federated_identities fact
-      keystone_sp:
-        sp_data: "{{ keystone_sp | to_json }}"
-
     - name: Ensure domain which remote IDP users are mapped onto exists
-      openstack.cloud.os_keystone_domain:
+      openstack.cloud.identity_domain:
         cloud: default
         state: present
         name: "{{ item.domain }}"
@@ -36,10 +27,10 @@
         verify: "{{ keystone_service_adminuri_insecure }}"
       when: item.domain is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
 
     - name: Ensure project which remote IDP users are mapped onto exists
-      openstack.cloud.os_project:
+      openstack.cloud.project:
         cloud: default
         state: present
         name: "{{ item.project }}"
@@ -48,10 +39,10 @@
         verify: "{{ keystone_service_adminuri_insecure }}"
       when: item.project is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
 
     - name: Ensure user which remote IDP users are mapped onto exists
-      openstack.cloud.os_user:
+      openstack.cloud.identity_user:
         cloud: default
         state: present
         name: "{{ item.user }}"
@@ -65,35 +56,35 @@
         item.password is defined and
         item.project is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
 
     - name: Ensure Group for external IDP users exists
-      openstack.cloud.os_group:
+      openstack.cloud.identity_group:
         cloud: default
         state: present
         name: "{{ item.group }}"
         domain_id: "{{ item.domain | default('default') }}"
         interface: admin
         verify: "{{ keystone_service_adminuri_insecure }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: item.group is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
 
     - name: Ensure Role for external IDP users exists
-      openstack.cloud.os_keystone_role:
+      openstack.cloud.identity_role:
         cloud: default
         state: present
         name: "{{ item.role | default('_member_') }}"
         interface: admin
         verify: "{{ keystone_service_adminuri_insecure }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: >
         item.group is defined and
         item.project is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
 
     - name: Ensure Group/Project/Role mapping exists
-      openstack.cloud.os_user_role:
+      openstack.cloud.role_assignment:
         cloud: default
         state: present
         group: "{{ item.group }}"
@@ -101,53 +92,40 @@
         role: "{{ item.role | default('_member_') }}"
         interface: admin
         verify: "{{ keystone_service_adminuri_insecure }}"
+      with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: >
         item.group is defined and
         item.project is defined
       no_log: true
-      with_items: "{{ keystone_federated_identities | default([]) }}"
 
     - name: Ensure mapping for external IDP attributes exists
-      keystone:
-        command: ensure_mapping
-        mapping_name: "{{ item.protocol.mapping.name }}"
-        mapping_rules: "{{ item.protocol.mapping.rules }}"
-        login_user: "{{ keystone_admin_user_name }}"
-        login_password: "{{ keystone_auth_admin_password }}"
-        login_project_name: "{{ keystone_admin_tenant_name }}"
-        endpoint: "{{ keystone_service_adminurl }}"
-        insecure: "{{ keystone_service_adminuri_insecure }}"
-      when: item.protocol.mapping.name is defined
+      openstack.cloud.federation_mapping:
+        name: "{{ item.mapping.name }}"
+        rules: "{{ item.mapping.rules }}"
+        interface: admin
+        verify: "{{ keystone_service_adminuri_insecure }}"
+      when: item.mapping.name is defined
       no_log: true
-      with_items: "{{ keystone_federated_protocols | default([]) }}"
+      with_items: "{{ trusted_idp.protocols | default([]) }}"
 
     - name: Ensure external IDP
-      keystone:
-        command: ensure_identity_provider
-        idp_name: "{{ item.name }}"
-        idp_remote_ids: "{{ item.entity_ids }}"
-        idp_enabled: true
-        idp_domain_id: "{{ item.domain_id | default(omit) }}"
-        login_user: "{{ keystone_admin_user_name }}"
-        login_password: "{{ keystone_auth_admin_password }}"
-        login_project_name: "{{ keystone_admin_tenant_name }}"
-        endpoint: "{{ keystone_service_adminurl }}"
-        insecure: "{{ keystone_service_adminuri_insecure }}"
-      when: item.name is defined
+      openstack.cloud.federation_idp:
+        name: "{{ trusted_idp.name }}"
+        remote_ids: "{{ trusted_idp.entity_ids }}"
+        enabled: true
+        domain_id: "{{ trusted_idp.domain_id | default(omit) }}"
+        interface: admin
+        verify: "{{ keystone_service_adminuri_insecure }}"
+      when: trusted_idp.name is defined
       no_log: true
-      with_items: "{{ keystone_sp.trusted_idp_list | default([]) }}"
 
     - name: Ensure federation protocol exists
-      keystone:
-        command: ensure_protocol
-        protocol_name: "{{ item.protocol.name }}"
-        idp_name: "{{ item.idp.name }}"
-        mapping_name: "{{ item.protocol.mapping.name }}"
-        login_user: "{{ keystone_admin_user_name }}"
-        login_password: "{{ keystone_auth_admin_password }}"
-        login_project_name: "{{ keystone_admin_tenant_name }}"
-        endpoint: "{{ keystone_service_adminurl }}"
-        insecure: "{{ keystone_service_adminuri_insecure }}"
-      when: item.protocol.name is defined
+      openstack.cloud.keystone_federation_protocol:
+        name: "{{ item.name }}"
+        idp_name: "{{ trusted_idp.name }}"
+        mapping_id: "{{ item.mapping.name }}"
+        interface: admin
+        verify: "{{ keystone_service_adminuri_insecure }}"
+      when: item.name is defined
       no_log: true
-      with_items: "{{ keystone_federated_protocols | default([]) }}"
+      with_items: "{{ trusted_idp.protocols | default([]) }}"
