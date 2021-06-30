@@ -55,10 +55,11 @@ keystone_idp_distro_packages:
   - ssl-cert
   - xmlsec1
 
-keystone_sp_distro_packages:
-  - "{{ keystone_sp_apache_mod_shib | ternary('libcurl3', 'libcurl4') }}"
-  - "{{ keystone_sp_apache_mod_auth_openidc | ternary('libapache2-mod-auth-openidc',
-                                                      'libapache2-mod-shib2') }}"
+keystone_sp_apache_mod_packages:
+  - name: libapache2-mod-shib
+    state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
+  - name: libapache2-mod-auth-openidc
+    state: "{{ keystone_sp_apache_mod_auth_openidc | ternary('present', 'absent') }}"
 
 keystone_developer_mode_distro_packages:
   - build-essential
@@ -86,7 +87,7 @@ keystone_apache_configs:
 keystone_apache_modules:
   - name: "ssl"
     state: "{{ (keystone_ssl | bool) | ternary('present', 'absent') }}"
-  - name: "shib2"
+  - name: "shib"
     state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
   - name: "auth_openidc"
     state: "{{ keystone_sp_apache_mod_auth_openidc | ternary('present', 'absent') }}"
