@@ -51,3 +51,7 @@
   src: https://opendev.org/openstack/ansible-role-systemd_service
   scm: git
   version: master
+- name: pki
+  src: https://opendev.org/openstack/ansible-role-pki
+  scm: git
+  version: master
