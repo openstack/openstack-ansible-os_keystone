@@ -2,17 +2,19 @@
 Configure keystone mappings
 ===========================
 
-The following is an example SP mapping configuration for an ADFS IdP:
+The federated_identities functionality can be used to create
+projects, groups, roles and domains before your federation attribute
+mappings route users towards those resources. If you manage creation of
+projects, groups, roles and domains via a separate mechanism making use
+of federated_identities is not required.
 
 .. code-block:: yaml
 
       federated_identities:
-        - domain: Default
+        - domain: default
           project: fedproject
           group: fedgroup
           role: _member_
-
-Each IdP trusted by an SP must have the following configuration:
 
 #. ``project``: The project that federation users have access to.
    If the project does not already exist, create it in the
@@ -27,6 +29,7 @@ Each IdP trusted by an SP must have the following configuration:
 
 #. ``domain``: The domain where the ``project`` lives, and where
    the you assign roles. Create the domain if it does not already exist.
+   This should be the ID of the domain.
 
 Ansible implements the equivalent of the following OpenStack CLI commands:
 
@@ -42,22 +45,22 @@ Ansible implements the equivalent of the following OpenStack CLI commands:
   openstack role create _member_
 
   # if the project does not already exist
-  openstack project create --domain Default fedproject
+  openstack project create --domain default fedproject
 
   # map the role to the project and user group in the domain
   openstack role add --project fedproject --group fedgroup _member_
 
-To add more mappings, add options to the list.
+To extend simply add more entries to the list.
 For example:
 
 .. code-block:: yaml
 
       federated_identities:
-        - domain: Default
+        - domain: default
           project: fedproject
           group: fedgroup
           role: _member_
-        - domain: Default
+        - domain: default
           project: fedproject2
           group: fedgroup2
           role: _member_
@@ -151,8 +154,10 @@ produces the following in keystone.
   ]
 
 The interpretation of the above mapping rule is that any federation user
-authenticated by the IdP maps to an ``ephemeral`` (non-existant) user in
-keystone. The user is a member of a group named ``fedgroup``. This is
-in a domain called ``Default``. The user's ID and Name (federation uses
-the same value for both properties) for all OpenStack services is
-the value of ``upn``.
+authenticated by the IdP maps to an ``ephemeral`` user in keystone.
+The user is a member of a group named ``fedgroup``. This is in a domain
+called ``Default``. As we have specified the domain, the users
+assignments in the keystone backend will be looked up alongside the
+assignments made in the mapping.
+The user's ID and Name (federation uses the same value for both properties)
+for all OpenStack services is the value of ``upn``.

@@ -405,7 +405,7 @@ keystone_sp: {}
 #      metadata_file: 'metadata-testshib-idp.xml'
 #      metadata_reload: 1800
 #      federated_identities:
-#        - domain: Default
+#        - domain: default
 #          project: fedproject
 #          group: fedgroup
 #          role: _member_
@@ -431,7 +431,7 @@ keystone_sp: {}
 #      metadata_file: 'metadata-adfs-idp.xml'
 #      metadata_reload: 1800
 #      federated_identities:
-#        - domain: Default
+#        - domain: default
 #          project: fedproject
 #          group: fedgroup
 #          role: _member_
