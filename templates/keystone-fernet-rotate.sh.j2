@@ -29,18 +29,23 @@ function autorotate {
     {% for host in groups['keystone_all'] %}
 
     {% if inventory_hostname != host %}
+    {% if 'ansible_host' in hostvars[host] %}
+    {% set destination_host = hostvars[host]['ansible_host'] %}
+    {% else %}
+    {% set destination_host = inventory_hostname %}
+    {% endif %}
 
     # Fernet sync job to "{{ host }}"
     scp -o UserKnownHostsFile=/dev/null \
         -o StrictHostKeyChecking=no \
         $(ls -dtr {{ keystone_fernet_tokens_key_repository }}/* | sort -Vr) \
-        {{ keystone_system_user_name }}@{{ hostvars[host]['ansible_host'] }}:{{ keystone_fernet_tokens_key_repository }}/
+        {{ keystone_system_user_name }}@{{ destination_host }}:{{ keystone_fernet_tokens_key_repository }}/
 
     rsync -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
           -avz \
           --delete \
           {{ keystone_fernet_tokens_key_repository }}/ \
-          {{ keystone_system_user_name }}@{{ hostvars[host]['ansible_host'] }}:{{ keystone_fernet_tokens_key_repository }}/
+          {{ keystone_system_user_name }}@{{ destination_host }}:{{ keystone_fernet_tokens_key_repository }}/
 
     {%- endif %}
 

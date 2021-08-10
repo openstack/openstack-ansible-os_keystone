@@ -21,7 +21,7 @@
           -avz
           --delete
           {{ keystone_fernet_tokens_key_repository }}/
-          {{ keystone_system_user_name }}@{{ hostvars[item]['ansible_host'] }}:{{ keystone_fernet_tokens_key_repository }}/
+          {{ keystone_system_user_name }}@{{ hostvars[item]['ansible_host'] | default(item) }}:{{ keystone_fernet_tokens_key_repository }}/
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
