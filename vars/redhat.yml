@@ -43,9 +43,6 @@ keystone_apache_distro_packages:
   - httpd-tools
   - mod_ssl
 
-keystone_nginx_distro_packages:
-  - nginx
-
 keystone_idp_distro_packages:
   - xmlsec1
 
@@ -78,8 +75,6 @@ keystone_apache_configs:
   - { src: "keystone-ports.conf.j2", dest: "/etc/httpd/conf.d/ports.conf" }
   - { src: "keystone-httpd.conf.j2", dest: "/etc/httpd/conf.d/keystone-httpd.conf" }
   - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/httpd/conf.modules.d/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
-
-keystone_nginx_conf_path: "conf.d"
 
 keystone_system_service_name: httpd
 

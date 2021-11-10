@@ -1,4 +1,5 @@
 <IfModule mpm_{{ keystone_httpd_mpm_backend }}_module>
+        ServerLimit              {{ keystone_httpd_mpm_server_limit }}
         StartServers             {{ keystone_httpd_mpm_start_servers }}
         MinSpareThreads          {{ keystone_httpd_mpm_min_spare_threads }}
         MaxSpareThreads          {{ keystone_httpd_mpm_max_spare_threads }}
