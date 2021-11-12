@@ -136,4 +136,4 @@ Listen {{ keystone_service_port }}
 
 </VirtualHost>
 
-ProxyPass /identity uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}/
+ProxyPass /identity uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}
