@@ -47,48 +47,45 @@
     - ansible_facts['pkg_mgr'] == 'dnf'
     - keystone_sp != {}
 
-- name: Add NGINX repository keys
-  rpm_key:
-    key: "{{ keystone_centos_nginx_key }}"
-    state: present
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-    - keystone_web_server == 'nginx'
-  register: add_nginx_key
-  until: add_nginx_key is success
-  retries: 5
-  delay: 2
+# TODO(noonedeadpunk): Remove nginx-related changes in Y release
+- name: Remove nginx keystone vhost configuration
+  file:
+    path: "/etc/nginx/{{ (ansible_facts['os_family'] | lower == 'debian') | ternary('sites-available', 'conf.d') }}/{{ item }}.conf"
+    state: absent
+  with_items: "{{ keystone_services.keys() | list }}"
+  register: nginx_vhosts
 
-- name: Add NGINX repository
-  yum_repository:
-    name: nginx
-    description: 'nginx repo'
-    baseurl: "{{ keystone_centos_nginx_mirror }}"
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-    - keystone_web_server == 'nginx'
-  register: add_nginx_repo
-  until: add_nginx_repo is success
-  retries: 5
-  delay: 2
+- name: Remove nginx symlink for vhost configuration
+  file:
+    path: /etc/nginx/sites-enabled/{{ item }}.conf
+    state: absent
+  with_items: "{{ keystone_services.keys() | list }}"
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Reload nginx if needed
+  service:
+    name: "nginx"
+    state: restarted
+  failed_when: false
+  when: nginx_vhosts is changed
 
 # If the web server being removed was never installed, this task will fail when trying
 # to stop/disable it. The task is therefore set to never fail.
-- name: Ensure other web server is not running/enabled
-  service:
-    name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_system_service_name, 'nginx') }}"
-    enabled: no
-    state: stopped
-    daemon_reload: "yes"
-  failed_when: false
+- name: Remove nginx web server
+  when: "('repo_all' in groups and inventory_hostname not in groups['repo_all']) or ('repo_all' not in groups)"
+  block:
+    - name: Ensure nginx web server is not running/enabled
+      service:
+        name: "nginx"
+        enabled: no
+        state: stopped
+      failed_when: false
 
-- name: Remove other web server distro packages and mod_wsgi
-  package:
-    name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages) }}"
-    state: absent
-    autoremove: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
-  when: "(is_metal is undefined) or
-         not (is_metal | bool)"
+    - name: Remove nginx server distro packages
+      package:
+        name: "nginx"
+        state: absent
+        autoremove: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
 
 - name: Install distro packages
   package:

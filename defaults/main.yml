@@ -180,20 +180,13 @@ keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_
 ## Set this value to override the "public_endpoint" keystone.conf variable
 #keystone_public_endpoint: "{{ keystone_service_publicuri }}"
 
-# This is the web server that will handle all requests and will act as a
+# Apache web server will handle all requests and will act as a
 # reverse proxy to uWSGI. If internal TLS/SSL certificates are configured,
 # they are implemented in this web server's configuration. Using a web server
 # for endpoints is far better for scale and allows the use of additional
 # modules to improve performance or security, leaving uWSGI to only have
 # to be used for running the service.
 #
-# Note:
-# The default is nginx, but apache will be used if Keystone is configured
-# as a Federated Service provider.
-# TODO (odyssey4me): Convert the SP implementation to use nginx instead
-# so that we do not have to be concerned with multiple web servers.
-#
-keystone_web_server: "{{ (keystone_sp != {}) | ternary('apache', 'nginx') }}"
 keystone_web_server_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 
 ## security.txt
@@ -216,25 +209,14 @@ keystone_apache_serversignature: "Off"
 
 ## Apache MPM tunables
 keystone_httpd_mpm_backend: event
+keystone_httpd_mpm_server_limit: "{{ keystone_wsgi_processes }}"
 keystone_httpd_mpm_start_servers: 2
 keystone_httpd_mpm_min_spare_threads: 25
 keystone_httpd_mpm_max_spare_threads: 75
 keystone_httpd_mpm_thread_limit: 64
 keystone_httpd_mpm_thread_child: 25
-keystone_httpd_mpm_max_requests: 150
+keystone_httpd_mpm_max_requests: "{{ keystone_httpd_mpm_server_limit * keystone_httpd_mpm_thread_child }}"
 keystone_httpd_mpm_max_conn_child: 0
-
-## Centos NGINX repository options
-keystone_centos_nginx_mirror: "{{ centos_nginx_mirror | default('http://nginx.org/packages/centos/7/$basearch/') }}"
-keystone_centos_nginx_key: "{{ centos_nginx_key | default('http://nginx.org/keys/nginx_signing.key') }}"
-
-## Nginx setup
-keystone_nginx_access_log_format_combined: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
-keystone_nginx_access_log_format_extras: '$request_time $upstream_response_time'
-keystone_nginx_ports:
-  keystone-wsgi-public: "{{ keystone_service_port }}"
-keystone_nginx_extra_conf:
-  - keepalive_timeout   70;
 
 ## uWSGI setup
 keystone_wsgi_threads: 1
@@ -255,7 +237,7 @@ keystone_ssl: false
 keystone_ssl_cert: /etc/ssl/certs/keystone.pem
 keystone_ssl_key: /etc/ssl/private/keystone.key
 keystone_ssl_ca_cert: /etc/ssl/certs/keystone-ca.pem
-keystone_ssl_protocol: "{{ (keystone_web_server == 'nginx') | ternary('TLSv1.2', 'ALL -SSLv2 -SSLv3 -TLSv1.0 -TLSv1.1') }}"
+keystone_ssl_protocol: "ALL -SSLv2 -SSLv3 -TLSv1.0 -TLSv1.1"
 keystone_ssl_cipher_suite: "{{ ssl_cipher_suite | default('ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS') }}"
 
 # if using a self-signed certificate, set this to true to regenerate it

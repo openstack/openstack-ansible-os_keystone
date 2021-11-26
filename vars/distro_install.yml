@@ -19,14 +19,9 @@
 # enabled.
 #
 keystone_package_list: |-
-  {% set packages = keystone_distro_packages %}
-  {% if keystone_web_server == 'apache' %}
-  {%   set _ = packages.extend(keystone_apache_distro_packages) %}
-  {%   if keystone_idp != {} %}
-  {%     set _ = packages.extend(keystone_idp_distro_packages) %}
-  {%   endif %}
-  {% else %}
-  {%   set _ = packages.extend(keystone_nginx_distro_packages) %}
+  {% set packages = keystone_distro_packages + keystone_apache_distro_packages %}
+  {% if keystone_idp != {} %}
+  {%   set _ = packages.extend(keystone_idp_distro_packages) %}
   {% endif %}
   {% if keystone_oslomsg_amqp1_enabled | bool %}
   {%   set _ = packages.extend(keystone_oslomsg_amqp1_distro_packages) %}

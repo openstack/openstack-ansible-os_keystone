@@ -15,7 +15,7 @@
 
 - name: Restart web server
   service:
-    name: "{{ (keystone_web_server == 'apache') | ternary(keystone_system_service_name, 'nginx') }}"
+    name: "{{ keystone_system_service_name }}"
     enabled: yes
     state: restarted
     daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"

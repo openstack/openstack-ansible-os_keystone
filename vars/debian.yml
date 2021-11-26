@@ -48,9 +48,6 @@ keystone_apache_distro_packages:
   - apache2-utils
   - libapache2-mod-proxy-uwsgi
 
-keystone_nginx_distro_packages:
-  - nginx-extras
-
 keystone_idp_distro_packages:
   - ssl-cert
   - xmlsec1
@@ -98,8 +95,6 @@ keystone_apache_modules:
 # This can be enabled when Apache2.5+ is available
 #  - name: "mod_journald"
 #    state: "present
-
-keystone_nginx_conf_path: "sites-available"
 
 keystone_system_service_name: apache2
 
