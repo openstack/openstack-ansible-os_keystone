@@ -20,7 +20,7 @@
     mode: "0711"
 
 - name: Apply uWSGI configuration
-  config_template:
+  openstack.config_template.config_template:
     src: "keystone-uwsgi.ini.j2"
     dest: "/etc/uwsgi/{{ item }}.ini"
     mode: "0744"

@@ -36,7 +36,7 @@
   when: _keystone_is_first_play_host
 
 - name: Copy keystone configuration files
-  config_template:
+  openstack.config_template.config_template:
     src: "keystone.conf.j2"
     dest: "/etc/keystone/keystone.conf"
     owner: "root"
@@ -50,7 +50,7 @@
     - Restart web server
 
 - name: Implement policy.yaml if there are overrides configured
-  config_template:
+  openstack.config_template.config_template:
     content: "{{ keystone_policy_overrides }}"
     dest: "/etc/keystone/policy.yaml"
     owner: "root"
@@ -90,7 +90,7 @@
   with_items: "{{ keystone_core_files }}"
 
 - name: Copy common config
-  config_template:
+  openstack.config_template.config_template:
     src: "{{ item.tmp_f }}"
     dest: "{{ item.target_f }}"
     owner: "root"
