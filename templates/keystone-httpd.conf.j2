@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-Listen {{ keystone_service_port }}
+Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
 <VirtualHost {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}>
 
     <IfVersion >= 2.4>
