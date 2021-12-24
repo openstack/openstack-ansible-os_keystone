@@ -23,9 +23,9 @@
       - release-notes-jobs-python3
     check:
       jobs:
-        - openstack-ansible-uw_apache-centos-7
+        - openstack-ansible-uw_apache-centos-7:
+            voting: false
         - openstack-ansible-uw_apache-ubuntu-bionic
     gate:
       jobs:
-        - openstack-ansible-uw_apache-centos-7
         - openstack-ansible-uw_apache-ubuntu-bionic
