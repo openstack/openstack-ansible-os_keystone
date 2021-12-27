@@ -149,7 +149,6 @@ keystone_oslomsg_amqp1_enabled: "{{ keystone_oslomsg_rpc_transport == 'amqp' }}"
 
 ## Role info
 keystone_role_name: admin
-keystone_default_role_name: _member_
 
 ## Admin info
 keystone_admin_user_name: admin
