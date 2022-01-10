@@ -32,6 +32,20 @@
     owner: "{{ keystone_apache_default_log_owner }}"
     group: "{{ keystone_apache_default_log_grp }}"
 
+## NOTE(cloudnull):
+## Module enable/disable process is only functional on Debian
+- name: Enable apache2 modules
+  apache2_module:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items: "{{ keystone_apache_modules }}"
+  when:
+    - ansible_facts['pkg_mgr'] == 'apt'
+    - item.state == 'present'
+  notify:
+    - Manage LB
+    - Restart web server
+
 - name: Place apache2 config files
   template:
     src: "{{ item.src }}"
@@ -45,13 +59,14 @@
 
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian
-- name: Enable/disable apache2 modules
+- name: Disable apache2 modules
   apache2_module:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ keystone_apache_modules }}"
   when:
     - ansible_facts['pkg_mgr'] == 'apt'
+    - item.state == 'absent'
   notify:
     - Manage LB
     - Restart web server
