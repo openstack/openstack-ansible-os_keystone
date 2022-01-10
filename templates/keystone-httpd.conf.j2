@@ -31,7 +31,12 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     SSLCompression Off
     SSLProtocol {{ keystone_ssl_protocol }}
     SSLHonorCipherOrder On
-    SSLCipherSuite {{ keystone_ssl_cipher_suite }}
+    {% if keystone_ssl_cipher_suite_tls12 != "" -%}
+    SSLCipherSuite {{ keystone_ssl_cipher_suite_tls12 }}
+    {% endif -%}
+    {% if keystone_ssl_cipher_suite_tls13 != "" -%}
+    SSLCipherSuite TLSv1.3 {{ keystone_ssl_cipher_suite_tls13 }}
+    {% endif -%}
     SSLOptions +StdEnvVars +ExportCertData
     {% endif -%}
     {% if keystone_sp_apache_mod_auth_openidc -%}
