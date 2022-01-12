@@ -28,7 +28,6 @@ keystone_devel_distro_packages:
   - libxslt-devel
   - openldap-devel
   - openssl-devel
-  - python36-devel
   - systemd-devel
   - which
 

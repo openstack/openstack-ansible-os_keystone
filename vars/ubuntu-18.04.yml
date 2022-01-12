@@ -35,7 +35,6 @@ keystone_devel_distro_packages:
   - libxslt1-dev
   - libxml2-dev
   - pkg-config
-  - python3-dev
 
 keystone_service_distro_packages:
   - python3-keystone
