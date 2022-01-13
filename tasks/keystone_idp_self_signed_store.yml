@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Store IdP self-signed certificate
-  memcached:
+  openstack.osa.memcached:
     name: "{{ item.name }}"
     file_path: "{{ item.src }}"
     state: "present"

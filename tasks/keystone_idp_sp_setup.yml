@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Register service providers
-  keystone:
+  openstack.osa.keystone:
     command: "ensure_service_provider"
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
