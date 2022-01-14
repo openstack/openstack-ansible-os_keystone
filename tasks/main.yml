@@ -71,7 +71,12 @@
   tags:
     - always
 
-- import_tasks: db_setup.yml
+- include_role:
+    name: openstack.osa.db_setup
+    apply:
+      tags:
+        - common-db
+        - keystone-config
   when:
     - "_keystone_is_first_play_host"
   vars:
@@ -85,10 +90,14 @@
           - username: "{{ keystone_galera_user }}"
             password: "{{ keystone_container_mysql_password }}"
   tags:
-    - common-db
-    - keystone-config
+    - always
 
-- import_tasks: mq_setup.yml
+- include_role:
+    name: openstack.osa.mq_setup
+    apply:
+      tags:
+        - common-mq
+        - keystone-config
   when:
     - "_keystone_is_first_play_host"
   vars:
@@ -103,8 +112,7 @@
     _oslomsg_notify_vhost: "{{ keystone_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ keystone_oslomsg_notify_transport }}"
   tags:
-    - common-mq
-    - keystone-config
+    - always
 
 - import_tasks: keystone_pre_install.yml
   tags:
@@ -198,7 +206,12 @@
   retries: 12
   delay: 5
 
-- import_tasks: service_setup.yml
+- include_role:
+    name: openstack.osa.service_setup
+    apply:
+      tags:
+        - keystone-config
+        - common-service
   vars:
     _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
     _service_in_ldap: "{{ keystone_service_in_ldap }}"
@@ -225,7 +238,7 @@
     - "_keystone_is_last_play_host"
     - "keystone_service_setup | bool"
   tags:
-    - keystone-config
+    - always
 
 - import_tasks: keystone_ldap_setup.yml
   when:
