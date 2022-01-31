@@ -61,38 +61,6 @@
   with_items: "{{ ansible_play_hosts }}"
   when: _keystone_is_first_play_host
 
-# NOTE(jrosser) this block is to undo symlinking of /etc/keystone into
-# the keystone venv introduced in change-id I93cb6463ca1eb93ab7f4e7a3970a7de829efaf66.
-# The smart-sources behaviour of deleting the /etc/keystone directory caused the total
-# loss of all fernet keys and credential keys during an R->S upgrade using the Stein
-# release candidate.
-# Remove this code in the Train release.
-- name: Source config block
-  block:
-    - name: Stat config directory
-      stat:
-        path: "/etc/keystone"
-      register: keystone_conf_dir_stat
-      with_items:
-        - "{{ ansible_play_hosts }}"
-      delegate_to: "{{ item }}"
-      run_once: yes
-
-    - name: Remove the config directory symlink, if it exists
-      file:
-        path: "/etc/keystone"
-        state: absent
-      with_items:
-        - "{{ keystone_conf_dir_stat.results }}"
-      delegate_to: "{{ item.item }}"
-      when:
-       - item.stat.islnk is defined and
-         item.stat.islnk
-      run_once: yes
-
-  when:
-    - keystone_install_method == 'source'
-
 # The fernet key repository is needed on all hosts even if only running against
 # one host, so the delegation preps the directories on all hosts at once.
 - name: Create keystone dir
