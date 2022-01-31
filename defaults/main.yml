@@ -291,9 +291,6 @@ keystone_ldap: {}
 keystone_ldap_domain_config_dir: /etc/keystone/domains
 
 
-# If you want to regenerate the keystone users SSH keys, on each run, set this var to True
-# Otherwise keys will be generated on the first run and not regenerated each run.
-keystone_recreate_keys: False
 
 ## Policy vars
 # Provide a list of access controls to update the default policy.json with. These changes will be merged
@@ -560,3 +557,34 @@ keystone_set_real_ip_from: []
 # doing upgrades, but should not usually be required.
 # ref: https://bugs.launchpad.net/openstack-ansible/+bug/1793389
 keystone_flush_memcache: no
+
+# host which holds the ssh certificate authority
+keystone_ssh_keypairs_setup_host: "{{ openstack_ssh_keypairs_setup_host | default('localhost') }}"
+
+# directory on the deploy host to create and store SSH keypairs
+keystone_ssh_keypairs_dir: "{{ openstack_ssh_keypairs_dir }}"
+
+#Each keystone host needs a signed ssh certificate to log into the others
+keystone_ssh_keypairs:
+  - name: "keystone-{{ inventory_hostname }}"
+    cert:
+      signed_by: "{{ openstack_ssh_signing_key }}"
+      principals: "{{ keystone_ssh_key_principals | default('keystone') }}"
+      valid_from: "{{ keystone_ssh_key_valid_from | default('always') }}"
+      valid_to: "{{ keystone_ssh_key_valid_to | default('forever') }}"
+
+#Each keystone host needs the signed ssh certificate installing to the keystone user
+keystone_ssh_keypairs_install_keys:
+  owner: "{{ keystone_system_user_name }}"
+  group: "{{ keystone_system_group_name }}"
+  keys:
+    - cert: "keystone-{{ inventory_hostname }}"
+      dest: "{{ keystone_system_user_home }}/.ssh/id_rsa"
+
+#Each compute host must trust the SSHD certificate authoritiy in the sshd configuration
+keystone_ssh_keypairs_install_ca: "{{ openstack_ssh_keypairs_authorities }}"
+
+#Each compute host must allow SSH certificates with the appropriate principal to log into the keystone user
+keystone_ssh_keypairs_principals:
+  - user: "{{ keystone_system_user_name }}"
+    principals: "{{ keystone_ssh_key_principals | default(['keystone']) }}"

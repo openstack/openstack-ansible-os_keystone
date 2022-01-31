@@ -27,14 +27,6 @@
   with_items: "{{ ansible_play_hosts }}"
   when: _keystone_is_first_play_host
 
-- name: Generate the keystone system user ssh key
-  user:
-    name: "{{ keystone_system_user_name }}"
-    generate_ssh_key: "yes"
-  delegate_to: "{{ item }}"
-  with_items: "{{ ansible_play_hosts }}"
-  when: _keystone_is_first_play_host
-
 - name: Copy keystone configuration files
   openstack.config_template.config_template:
     src: "keystone.conf.j2"
