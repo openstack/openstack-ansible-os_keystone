@@ -16,18 +16,16 @@
 - project:
     templates:
       - check-requirements
-      - openstack-ansible-linters
-      - openstack-ansible-deploy-aio_metal-jobs
-      - openstack-ansible-deploy-aio_distro_metal-jobs
+      #- openstack-ansible-linters
+      #- openstack-ansible-deploy-aio_metal-jobs
+      #- openstack-ansible-deploy-aio_distro_metal-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
     check:
-      jobs:
-        - openstack-ansible-uw_apache-centos-8
-        - openstack-ansible-uw_apache-ubuntu-bionic
-        - openstack-ansible-uw_apache-ubuntu-focal
+      jobs: []
+        #- openstack-ansible-uw_apache-ubuntu-bionic
+        #- openstack-ansible-uw_apache-ubuntu-focal
     gate:
-      jobs:
-        - openstack-ansible-uw_apache-centos-8
-        - openstack-ansible-uw_apache-ubuntu-bionic
-        - openstack-ansible-uw_apache-ubuntu-focal
+      jobs: []
+        #- openstack-ansible-uw_apache-ubuntu-bionic
+        #- openstack-ansible-uw_apache-ubuntu-focal
