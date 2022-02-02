@@ -24,10 +24,8 @@
     check:
       jobs:
         - openstack-ansible-uw_apache-centos-7
-        - openstack-ansible-uw_apache-centos-8
         - openstack-ansible-uw_apache-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-uw_apache-centos-7
-        - openstack-ansible-uw_apache-centos-8
         - openstack-ansible-uw_apache-ubuntu-bionic
