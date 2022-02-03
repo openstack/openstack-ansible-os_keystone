@@ -108,12 +108,11 @@ keystone_database_connection_string: >-
 keystone_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
 keystone_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('') }}"
 # Database tuning
-# TODO(damiandabrowski): Deprecate following variables in Yoga release: keystone_database_max_pool_size, keystone_database_pool_timeout and keystone_database_idle_timeout
 keystone_database_enabled: true
 keystone_db_max_overflow: "{{ openstack_db_max_overflow | default('50') }}"
-keystone_db_max_pool_size: "{{ openstack_db_max_pool_size | default(keystone_database_max_pool_size) | default('5') }}"
-keystone_db_pool_timeout: "{{ openstack_db_pool_timeout | default(keystone_database_pool_timeout) | default('30') }}"
-keystone_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | default(keystone_database_idle_timeout) | default('600') }}"
+keystone_db_max_pool_size: "{{ openstack_db_max_pool_size | default('5') }}"
+keystone_db_pool_timeout: "{{ openstack_db_pool_timeout | default('30') }}"
+keystone_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | default('600') }}"
 
 ## Oslo Messaging
 keystone_messaging_enabled: true
