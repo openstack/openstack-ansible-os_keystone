@@ -15,7 +15,7 @@
 
 - name: Wait for service to be up
   uri:
-    url: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
+    url: "http://{{ keystone_uwsgi_bind_address }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
     method: "HEAD"
     status_code: 300
   register: _wait_check
