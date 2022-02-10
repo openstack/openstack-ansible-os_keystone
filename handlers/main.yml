@@ -55,16 +55,6 @@
     - "venv changed"
     - "Restart uWSGI"
 
-# NOTE (noonedeadpunk): Remove this task after Xena release
-- name: Remove obsoleted policy.json file
-  file:
-    path: "/etc/keystone/policy.json"
-    state: absent
-  listen:
-    - "venv changed"
-    - "Restart web server"
-    - "Restart uWSGI"
-
 - name: Start uWSGI
   service:
     name: "{{ item }}"
