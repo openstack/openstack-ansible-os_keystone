@@ -255,10 +255,10 @@ keystone_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ inter
 #keystone_user_ssl_ca_cert: <path to cert on ansible deployment host>
 
 # Set to true when terminating SSL/TLS at a load balancer
-keystone_external_ssl: false
+keystone_external_ssl: "{{ (haproxy_ssl | default(True)) | bool }}"
 
 # External SSL forwarding proto
-keystone_secure_proxy_ssl_header: HTTP_X_FORWARDED_PROTO
+keystone_secure_proxy_ssl_header: X-Forwarded-Proto
 
 ## Override memcached_servers
 keystone_memcached_servers: "{{ memcached_servers }}"

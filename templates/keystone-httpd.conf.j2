@@ -20,6 +20,12 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     {% endif -%}
     Header set X-Frame-Options "{{ keystone_x_frame_options | default ('DENY') }}"
 
+    {% if (keystone_ssl | bool) and (keystone_external_ssl | bool) %}
+    RequestHeader set {{ keystone_secure_proxy_ssl_header }} "https"
+    {% elif not (keystone_ssl | bool) and (keystone_external_ssl | bool) %}
+    RequestHeader set {{ keystone_secure_proxy_ssl_header }} "http"
+    {% endif %}
+
     {% if keystone_ssl | bool and keystone_service_internaluri_proto == "https" -%}
     SSLEngine on
     SSLCertificateFile    {{ keystone_ssl_cert }}
