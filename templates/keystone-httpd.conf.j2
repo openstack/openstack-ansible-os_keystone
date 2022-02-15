@@ -8,9 +8,8 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     </IfVersion>
 
     LogLevel  {{  keystone_apache_log_level }}
-    # NOTE(Cloudnull): Log files can changed to use "mod_journal" when Apache 2.5 is released
-    ErrorLog  {{ keystone_apache_default_log_folder }}/keystone-apache-error.log
-    CustomLog {{ keystone_apache_default_log_folder }}/ssl_access.log {{ keystone_apache_custom_log_format }}
+    ErrorLog  syslog:daemon
+    CustomLog "|/usr/bin/env logger -p daemon.info -t {{ keystone_system_service_name }}" {{ keystone_apache_custom_log_format }}
     Options +FollowSymLinks
 
     Header set X-Content-Type-Options "nosniff"
