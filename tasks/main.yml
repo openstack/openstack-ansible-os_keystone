@@ -169,9 +169,15 @@
   tags:
     - keystone-config
 
-- import_tasks: keystone_uwsgi.yml
+- name: Import uwsgi role
+  import_role:
+    name: uwsgi
+  vars:
+    uwsgi_services: "{{ uwsgi_keystone_services }}"
+    uwsgi_install_method: "{{ keystone_install_method }}"
   tags:
     - keystone-config
+    - uwsgi
 
 - name: Flush handlers
   meta: flush_handlers
