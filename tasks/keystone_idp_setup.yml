@@ -13,15 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: keystone_idp_self_signed_create.yml
-  when: _keystone_is_first_play_host
-
-- include_tasks: keystone_idp_self_signed_store.yml
-  when: _keystone_is_first_play_host
-
-- include_tasks: keystone_idp_self_signed_distribute.yml
-  when: not _keystone_is_first_play_host
-
 - include_tasks: keystone_idp_metadata.yml
 
 - include_tasks: keystone_idp_sp_setup.yml
