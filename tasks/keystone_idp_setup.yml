@@ -13,7 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: keystone_idp_metadata.yml
+- name: Generate IdP metadata
+  shell: |
+    {{ keystone_bin }}/keystone-manage saml_idp_metadata > {{ keystone_idp.idp_metadata_path }}
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
+  when: keystone_idp != {}
+  notify:
+    - Manage LB
+    - Restart uWSGI
 
-- include_tasks: keystone_idp_sp_setup.yml
+- name: Register service providers
+  openstack.osa.keystone:
+    command: "ensure_service_provider"
+    login_user: "{{ keystone_admin_user_name }}"
+    login_password: "{{ keystone_auth_admin_password }}"
+    login_project_name: "{{ keystone_admin_tenant_name }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    sp_name: "{{ item.id }}"
+    sp_url: "{{ item.sp_url }}"
+    sp_auth_url: "{{ item.auth_url }}"
+  with_items: "{{ keystone_idp.service_providers | default([]) }}"
+  no_log: true
+  register: add_service_providers
+  until: add_service_providers is success
+  retries: 5
+  delay: 10
   when: keystone_service_setup | bool
