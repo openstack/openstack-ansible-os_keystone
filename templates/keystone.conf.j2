@@ -51,7 +51,6 @@ backend = oslo_cache.memcache_pool
 # and multiple instances.
 memcache_servers = {{ keystone_cache_servers | join(',') }}
 config_prefix = cache.keystone
-distributed_lock = True
 enabled = true
 {% endif %}
 
