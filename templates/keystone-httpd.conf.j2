@@ -59,6 +59,15 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     {% if keystone_sp.trusted_idp_list.0.oidc_outgoing_proxy is defined -%}
     OIDCOutgoingProxy {{ keystone_sp.trusted_idp_list.0.oidc_outgoing_proxy }}
     {% endif -%}
+    {% if keystone_sp.trusted_idp_list.0.oidc_oauth_introspection_endpoint is defined -%}
+    OIDCOAuthIntrospectionEndpoint {{ keystone_sp.trusted_idp_list.0.oidc_oauth_introspection_endpoint }}
+    {% endif -%}
+    {% if keystone_sp.trusted_idp_list.0.oidc_oauth_client_id is defined -%}
+    OIDCOAuthClientID {{ keystone_sp.trusted_idp_list.0.oidc_oauth_client_id }}
+    {% endif -%}
+    {% if keystone_sp.trusted_idp_list.0.oidc_oauth_client_secret is defined -%}
+    OIDCOAuthClientSecret {{ keystone_sp.trusted_idp_list.0.oidc_oauth_client_secret }}
+    {% endif -%}
     {% if keystone_cache_servers | length > 0 -%}
     OIDCCacheType memcache
     OIDCMemCacheServers "{{ keystone_cache_servers | join(' ') }}"
