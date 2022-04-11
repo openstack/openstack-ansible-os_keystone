@@ -33,20 +33,6 @@
     - "{{ keystone_system_additional_groups }}"
   when: _keystone_is_first_play_host
 
-- name: Remove old key file(s) if found
-  file:
-    path: "{{ item[1] }}"
-    state: "absent"
-  with_nested:
-    - "{{ ansible_play_hosts }}"
-    - - "{{ keystone_system_user_home }}/.ssh/authorized_keys"
-      - "{{ keystone_system_user_home }}/.ssh/id_rsa"
-      - "{{ keystone_system_user_home }}/.ssh/id_rsa.pub"
-  when:
-    - keystone_recreate_keys | bool
-    - _keystone_is_first_play_host
-  delegate_to: "{{ item[0] }}"
-
 - name: Create the keystone system user
   user:
     name: "{{ keystone_system_user_name }}"
