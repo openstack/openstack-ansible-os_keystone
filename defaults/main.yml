@@ -235,19 +235,101 @@ keystone_default_uwsgi_overrides:
     socket: "127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
 
 # set keystone_ssl to true to enable SSL configuration on the keystone containers
-keystone_ssl: false
+keystone_ssl: "{{ openstack_backend_service_https | default(False) }}"
+
+# The local address used for the keystone node
+keystone_node_address: "{{ management_address | default('127.0.0.1') }}"
+
+# Storage location for SSL certificate authority
+keystone_pki_dir: "{{ openstack_pki_dir }}"
+
+# Delegated host for operating the certificate authority
+keystone_pki_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
+
+keystone_pki_keys_path: "{{ keystone_pki_dir ~ '/certs/private/' }}"
+keystone_pki_certs_path: "{{ keystone_pki_dir ~ '/certs/certs/' }}"
+keystone_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name }}"
+keystone_pki_intermediate_cert_path: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_pki_intermediate_cert_name ~ '/certs/' ~ keystone_pki_intermediate_cert_name ~ '.crt' }}"
+keystone_pki_regen_cert: ''
+
+# By default, CA creation is controlled using the CA 'condition' field
+keystone_pki_create_ca: True
+# An optional private certificate authority for when Keystone is an IDP
+keystone_idp_authority_name: "KeystoneIDPAuthority"
+keystone_pki_authorities:
+  - name: "{{ keystone_idp_authority_name }}"
+    country: "GB"
+    state_or_province_name: "England"
+    organization_name: "Example Corporation"
+    organizational_unit_name: "IT Security"
+    cn: "Keystone IDP CA"
+    provider: selfsigned
+    basic_constraints: "CA:TRUE"
+    key_usage:
+      - digitalSignature
+      - keyCertSign
+    not_after: "+3650d"
+    condition: "{{ (keystone_idp['certfile'] is defined) and _keystone_is_first_play_host }}"
+
+# By default, certificate creation is controlled using the certificates 'condition' field
+keystone_pki_create_certificates: True
+# Server certificate for Apache
+keystone_pki_certificates:
+  - name: "keystone_{{ ansible_facts['hostname'] }}"
+    provider: ownca
+    cn: "{{ ansible_facts['hostname'] }}"
+    san: "{{ 'DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ keystone_node_address }}"
+    signed_by: "{{ keystone_pki_intermediate_cert_name }}"
+    condition: "{{ keystone_ssl }}"
+
+# Set to the value of keystone_idp_authority_name to regenerate the IDP CA
+keystone_pki_regen_ca: ''
+
+# keystone destination files for Apache SSL certificates
 keystone_ssl_cert: /etc/ssl/certs/keystone.pem
 keystone_ssl_key: /etc/ssl/private/keystone.key
 keystone_ssl_ca_cert: /etc/ssl/certs/keystone-ca.pem
+
+# Installation details for SSL certificates
+keystone_pki_install_certificates:
+  # Apache certificates
+  - src: "{{ keystone_user_ssl_cert | default(keystone_pki_certs_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '.crt') }}"
+    dest: "{{ keystone_ssl_cert }}"
+    owner: "keystone_system_user_name"
+    group: "keystone_system_group_name"
+    mode: "0644"
+    condition: "{{ keystone_ssl }}"
+  - src: "{{ keystone_user_ssl_key | default(keystone_pki_keys_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    dest: "{{ keystone_ssl_key }}"
+    owner: "keystone_system_user_name"
+    group: "keystone_system_group_name"
+    mode: "0600"
+    condition: "{{ keystone_ssl }}"
+  - src: "{{ keystone_user_ssl_ca_cert | default(keystone_pki_intermediate_cert_path) }}"
+    dest: "{{ keystone_ssl_ca_cert }}"
+    owner: "keystone_system_user_name"
+    group: "keystone_system_group_name"
+    mode: "0644"
+    condition: "{{ keystone_ssl }}"
+  # IDP certificates
+  - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/certs/' ~ keystone_idp_authority_name ~ '.crt' }}"
+    dest: "{{ keystone_idp['certfile'] }}"
+    owner: "keystone_system_user_name"
+    group: "keystone_system_group_name"
+    mode: "0640"
+    condition: "{{ keystone_idp['certfile'] is defined | bool }}"
+  - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/private/' ~ keystone_idp_authority_name ~ '.key.pem' }}"
+    dest: "{{ keystone_idp['keyfile'] }}"
+    owner: "keystone_system_user_name"
+    group: "keystone_system_group_name"
+    mode: "0640"
+    condition: "{{ keystone_idp['keyfile'] is defined | bool }}"
+
 keystone_ssl_protocol: "{{ ssl_protocol | default('ALL -SSLv2 -SSLv3 -TLSv1 -TLSv1.1') }}"
 # TLS v1.2 and below
 keystone_ssl_cipher_suite_tls12: "{{ keystone_ssl_cipher_suite | default(ssl_cipher_suite_tls12 | default('ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS')) }}"
 # TLS v1.3
 keystone_ssl_cipher_suite_tls13: "{{ ssl_cipher_suite_tls13 | default('TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256') }}"
-
-# if using a self-signed certificate, set this to true to regenerate it
-keystone_ssl_self_signed_regen: false
-keystone_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ internal_lb_vip_address }}/subjectAltName=IP.1={{ external_lb_vip_address }}"
 
 # Set these variables to deploy custom certificates
 #keystone_user_ssl_cert: <path to cert on ansible deployment host>
