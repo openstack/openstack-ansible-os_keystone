@@ -644,7 +644,7 @@ keystone_flush_memcache: no
 keystone_ssh_keypairs_setup_host: "{{ openstack_ssh_keypairs_setup_host | default('localhost') }}"
 
 # directory on the deploy host to create and store SSH keypairs
-keystone_ssh_keypairs_dir: "{{ openstack_ssh_keypairs_dir }}"
+keystone_ssh_keypairs_dir: "{{ openstack_ssh_keypairs_dir | default('/etc/openstack_deploy/ssh_keypairs') }}"
 
 #Each keystone host needs a signed ssh certificate to log into the others
 keystone_ssh_keypairs:
