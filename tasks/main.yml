@@ -167,6 +167,7 @@
     tasks_from: main_certs.yml
   vars:
     pki_setup_host: "{{ keystone_pki_setup_host }}"
+    pki_dir: "{{ keystone_pki_dir }}"
     pki_create_ca: "{{ keystone_pki_create_ca }}"
     pki_authorities: "{{ keystone_pki_ca_certificates }}"
     pki_regen_ca: "{{ keystone_pki_regen_ca }}"
