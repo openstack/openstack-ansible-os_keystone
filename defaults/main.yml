@@ -460,6 +460,9 @@ keystone_sp: {}
 #      oidc_crypto_passphrase: random string
 #      oidc_redirect_uri: https://keystone:5000/v3/OS-FEDERATION/identity_providers/keycloak-idp/protocols/openid/auth
 #      oidc_outgoing_proxy: "proxy address" (optional setting)
+#      oidc_oauth_introspection_endpoint: endpoint address (optional)
+#      oidc_oauth_client_id: string (optional)
+#      oidc_oauth_client_secret: secret (optional)
 #      oidc_auth_request_params: param=some+url+encoded+value&param2=and+another+one (optional)
 #      oidc_state_max_number_of_cookies: 5 false (optional)
 #      oidc_default_url: https://example.com/callback (optional)
