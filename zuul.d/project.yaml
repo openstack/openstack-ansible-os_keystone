@@ -19,5 +19,6 @@
       - openstack-ansible-linters-jobs
       - openstack-ansible-deploy-aio_metal-jobs
       - openstack-ansible-deploy-aio_distro_metal-jobs
+      - openstack-ansible-deploy-infra_lxc-jobs
       - publish-openstack-docs-pti
       - build-release-notes-jobs-python3
