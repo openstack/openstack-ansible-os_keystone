@@ -114,10 +114,6 @@
   tags:
     - always
 
-- import_tasks: keystone_pre_install.yml
-  tags:
-    - keystone-install
-
 - import_tasks: keystone_install.yml
   tags:
     - keystone-install
@@ -130,10 +126,6 @@
     - keystone-config
 
 - import_tasks: keystone_post_install.yml
-  tags:
-    - keystone-config
-
-- import_tasks: keystone_key_setup.yml
   tags:
     - keystone-config
 
