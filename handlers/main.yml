@@ -106,7 +106,3 @@
   listen: flush cache
   when:
     - keystone_flush_memcache | bool
-
-- meta: noop
-  listen: Manage LB
-  when: false

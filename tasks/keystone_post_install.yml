@@ -37,7 +37,6 @@
     config_overrides: "{{ keystone_keystone_conf_overrides }}"
     config_type: "ini"
   notify:
-    - Manage LB
     - Restart uWSGI
     - Restart web server
 

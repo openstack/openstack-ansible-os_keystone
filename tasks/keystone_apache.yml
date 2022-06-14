@@ -43,7 +43,6 @@
     - ansible_facts['pkg_mgr'] == 'apt'
     - item.state == 'present'
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Place apache2 config files
@@ -54,7 +53,6 @@
     group: "root"
   with_items: "{{ keystone_apache_configs }}"
   notify:
-    - Manage LB
     - Restart web server
 
 ## NOTE(cloudnull):
@@ -68,7 +66,6 @@
     - ansible_facts['pkg_mgr'] == 'apt'
     - item.state == 'absent'
   notify:
-    - Manage LB
     - Restart web server
 
 ## NOTE(andymccr):
@@ -81,7 +78,6 @@
   when:
    - ansible_facts['pkg_mgr'] == 'dnf'
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Disable default apache site
@@ -90,7 +86,6 @@
     state: "absent"
   with_items: "{{ keystone_apache_default_sites }}"
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Enabled keystone vhost
@@ -102,7 +97,6 @@
     - keystone_apache_site_available is defined
     - keystone_apache_site_enabled is defined
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Ensure Apache ServerName
@@ -110,7 +104,6 @@
     dest: "{{ keystone_apache_conf }}"
     line: "ServerName {{ ansible_facts['hostname'] }}"
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Ensure Apache ServerTokens
@@ -119,7 +112,6 @@
     regexp: '^ServerTokens'
     line: "ServerTokens {{ keystone_apache_servertokens }}"
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Ensure Apache ServerSignature
@@ -128,7 +120,6 @@
     regexp: '^ServerSignature'
     line: "ServerSignature {{ keystone_apache_serversignature }}"
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Remove Listen from Apache config
@@ -138,5 +129,4 @@
     backrefs: yes
     line: '#\1'
   notify:
-    - Manage LB
     - Restart web server

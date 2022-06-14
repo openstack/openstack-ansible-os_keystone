@@ -66,7 +66,6 @@
        (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
     - "(item.status['LoadState'] == 'loaded' | bool)"
   notify:
-    - Manage LB
     - Restart uWSGI
 
 - name: Perform a Keystone DB sync expand

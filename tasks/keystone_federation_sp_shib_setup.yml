@@ -38,7 +38,6 @@
     - { content: "{{ shibboleth_cert_user_content }}", dest: "/etc/shibboleth/sp-cert.pem" }
     - { content: "{{ shibboleth_key_user_content }}", dest: "/etc/shibboleth/sp-key.pem" }
   notify:
-    - Manage LB
     - Restart web server
     - Restart Shibd
 
@@ -48,7 +47,6 @@
     creates: "/etc/shibboleth/sp-cert.pem"
   when: _keystone_is_first_play_host
   notify:
-    - Manage LB
     - Restart web server
     - Restart Shibd
 
@@ -81,7 +79,6 @@
     mode: "0640"
   when: not _keystone_is_first_play_host
   notify:
-    - Manage LB
     - Restart web server
     - Restart Shibd
 
@@ -94,7 +91,6 @@
     mode: "0640"
   when: not _keystone_is_first_play_host
   notify:
-    - Manage LB
     - Restart web server
     - Restart Shibd
 
@@ -108,6 +104,5 @@
     - "/etc/shibboleth/sp-key.pem"
   when: not _keystone_is_first_play_host
   notify:
-    - Manage LB
     - Restart web server
     - Restart Shibd

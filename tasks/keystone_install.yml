@@ -58,7 +58,6 @@
   retries: 5
   delay: 2
   notify:
-    - Manage LB
     - Restart web server
 
 - name: Install/remove apache mod packages for federated authentication
@@ -136,5 +135,4 @@
     state: link
     force: yes
   notify:
-    - Manage LB
     - Restart web server
