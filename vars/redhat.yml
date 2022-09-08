@@ -75,7 +75,7 @@ keystone_apache_configs:
   - { src: "keystone-httpd.conf.j2", dest: "/etc/httpd/conf.d/keystone-httpd.conf" }
   - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/httpd/conf.modules.d/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
 
-keystone_system_service_name: httpd
+keystone_system_service_name: "{{ (keystone_use_uwsgi | bool) | ternary('keystone-wsgi-public', 'httpd') }}"
 
 keystone_uwsgi_bin: '/usr/sbin'
 

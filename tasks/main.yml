@@ -150,6 +150,7 @@
 - import_tasks: keystone_federation_sp_shib_setup.yml
   when:
     - keystone_sp_apache_mod_shib
+    - not (keystone_use_uwsgi | bool)
   tags:
     - keystone-config
 
@@ -173,6 +174,8 @@
     - keystone-config
 
 - import_tasks: "keystone_apache.yml"
+  when:
+    - not (keystone_use_uwsgi | bool)
   tags:
     - keystone-config
 

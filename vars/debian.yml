@@ -95,7 +95,7 @@ keystone_apache_modules:
 #  - name: "mod_journald"
 #    state: "present
 
-keystone_system_service_name: apache2
+keystone_system_service_name: "{{ (keystone_use_uwsgi | bool) | ternary('keystone-wsgi-public', 'apache2') }}"
 
 keystone_uwsgi_bin: '/usr/bin'
 

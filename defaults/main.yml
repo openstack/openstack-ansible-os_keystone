@@ -179,12 +179,18 @@ keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_
 ## Set this value to override the "public_endpoint" keystone.conf variable
 #keystone_public_endpoint: "{{ keystone_service_publicuri }}"
 
+# Enable or disable uWSGI as the primary service manager. While uWSGI is used
+# for basic deployments, when this option is enabled it will become the sole
+# service manager instead of being a proxy target.
+keystone_use_uwsgi: false
+
 # Apache web server will handle all requests and will act as a
-# reverse proxy to uWSGI. If internal TLS/SSL certificates are configured,
-# they are implemented in this web server's configuration. Using a web server
-# for endpoints is far better for scale and allows the use of additional
-# modules to improve performance or security, leaving uWSGI to only have
-# to be used for running the service.
+# reverse proxy to uWSGI when the `keystone_use_uwsgi` option is not enabled.
+# If internal TLS/SSL certificates are configured, they are implemented in
+# this web server's configuration. Using a web server for endpoints is
+# far better for scale and allows the use of additional modules to improve
+# performance or security, leaving uWSGI to only have to be used for running
+# the service.
 #
 keystone_web_server_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 
@@ -616,7 +622,7 @@ keystone_services:
     wsgi_path: "{{ keystone_bin }}/keystone-wsgi-public"
     uwsgi_overrides: "{{ keystone_default_uwsgi_overrides | combine(keystone_uwsgi_ini_overrides, recursive=True) }}"
     uwsgi_bind_address: "{{ keystone_uwsgi_bind_address }}"
-    uwsgi_port: "{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
+    uwsgi_port: "{{ (keystone_use_uwsgi | bool) | ternary(keystone_service_port, keystone_uwsgi_ports['keystone-wsgi-public']['http']) }}"
 
 ## Extra HTTP headers for Keystone
 # Add any additional headers here that Keystone should return.
