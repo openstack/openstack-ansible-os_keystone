@@ -357,6 +357,8 @@ keystone_memcached_servers: "{{ memcached_servers }}"
 # The cache_servers default backend is memcached, so this variable
 # should point to a list of memcached servers.
 # If empty, caching is disabled.
+keystone_cache_backend: "{{ openstack_cache_backend | default('oslo_cache.memcache_pool') }}"
+keystone_cache_backend_map: "{{ openstack_cache_backend_map | default(_keystone_cache_backend_map) }}"
 keystone_cache_servers: "{{ keystone_memcached_servers.split(',') }}"
 
 ## LDAP Section
@@ -572,8 +574,7 @@ keystone_pip_packages:
   - ldappool
   - osprofiler
   - PyMySQL
-  - pymemcache
-  - python-memcached
+  - "{{ _keystone_cache_backend_package }}"
   - python-openstackclient
   - systemd-python
   - uWSGI
