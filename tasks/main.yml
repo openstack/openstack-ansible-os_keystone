@@ -191,12 +191,16 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- import_tasks: keystone_service_bootstrap.yml
+- include_tasks: keystone_service_bootstrap.yml
+  args:
+    apply:
+      tags:
+        - keystone-config
   when:
-    - "_keystone_is_first_play_host"
+    - "_keystone_is_last_play_host"
     - "keystone_service_setup | bool"
   tags:
-    - keystone-config
+    - always
 
 # Note(odyssey4me):
 # This set of tasks specifically runs against the last keystone
@@ -265,10 +269,16 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- import_tasks: keystone_idp_setup.yml
-  when: keystone_idp != {}
+- include_tasks: keystone_idp_setup.yml
+  args:
+    apply:
+      tags:
+        - keystone-config
+  when:
+    - keystone_idp != {}
+    - _keystone_is_last_play_host
   tags:
-    - keystone-config
+    - always
 
 - name: Diagnose common problems with keystone deployments
   command: "{{ keystone_bin }}/keystone-manage doctor"
@@ -278,5 +288,7 @@
   failed_when: not debug and keystone_doctor.rc != 0
   changed_when: false
   run_once: yes
+  when:
+    - "_keystone_is_last_play_host"
   tags:
     - keystone-config
