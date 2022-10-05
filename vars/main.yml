@@ -37,3 +37,22 @@ uwsgi_keystone_services: |-
 
 _keystone_is_first_play_host: "{{ (keystone_services['keystone-wsgi-public']['group'] in group_names and inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | intersect(ansible_play_hosts)) | list)[0]) | bool }}"
 _keystone_is_last_play_host: "{{ (keystone_services['keystone-wsgi-public']['group'] in group_names and inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | intersect(ansible_play_hosts)) | list)[-1]) | bool }}"
+_keystone_cache_backend_map:
+  dogpile:
+    - oslo_cache.memcache_pool
+    - dogpile.cache.pymemcache
+    - dogpile.cache.memcached
+    - dogpile.cache.bmemcached
+  mongo:
+    - oslo_cache.mongo
+  etcd3gw:
+    - oslo_cache.etcd3gw
+
+_keystone_cache_backend_package: |-
+    {% set oslo = namespace(backend='dogpile') %}
+    {% for key, value in _keystone_cache_backend_map.items() %}
+    {%   if keystone_cache_backend in value %}
+    {%     set oslo.backend = key %}
+    {%-   endif %}
+    {%- endfor %}
+    oslo.cache[{{ oslo.backend }}]
