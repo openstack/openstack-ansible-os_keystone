@@ -168,7 +168,7 @@
     pki_certificates: "{{ keystone_pki_certificates }}"
     pki_install_certificates: "{{ keystone_pki_install_certificates }}"
   when:
-    - (keystone_ssl | bool) or (keystone_idp['certfile'] is defined)
+    - (keystone_backend_ssl | bool) or (keystone_idp['certfile'] is defined)
   tags:
     - keystone-config
 

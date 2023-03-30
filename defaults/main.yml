@@ -240,8 +240,9 @@ keystone_default_uwsgi_overrides:
   uwsgi:
     socket: "127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
 
-# set keystone_ssl to true to enable SSL configuration on the keystone containers
-keystone_ssl: "{{ openstack_backend_service_https | default(False) }}"
+# Define if communication between haproxy and service backends should be
+# encrypted with TLS.
+keystone_backend_ssl: "{{ openstack_service_backend_ssl | default(False) }}"
 
 # The local address used for the keystone node
 keystone_node_address: "{{ management_address | default('127.0.0.1') }}"
@@ -286,7 +287,7 @@ keystone_pki_certificates:
     cn: "{{ ansible_facts['hostname'] }}"
     san: "{{ 'DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ keystone_node_address }}"
     signed_by: "{{ keystone_pki_intermediate_cert_name }}"
-    condition: "{{ keystone_ssl }}"
+    condition: "{{ keystone_backend_ssl }}"
 
 # Set to the value of keystone_idp_authority_name to regenerate the IDP CA
 keystone_pki_regen_ca: ''
@@ -304,13 +305,13 @@ keystone_pki_install_certificates:
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     mode: "0644"
-    condition: "{{ keystone_ssl }}"
+    condition: "{{ keystone_backend_ssl }}"
   - src: "{{ keystone_user_ssl_key | default(keystone_pki_keys_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
     dest: "{{ keystone_ssl_key }}"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     mode: "0600"
-    condition: "{{ keystone_ssl }}"
+    condition: "{{ keystone_backend_ssl }}"
   - src: "{{ keystone_user_ssl_ca_cert | default(keystone_pki_intermediate_cert_path) }}"
     dest: "{{ keystone_ssl_ca_cert }}"
     owner: "{{ keystone_system_user_name }}"
