@@ -299,7 +299,7 @@ keystone_ssl_ca_cert: /etc/ssl/certs/keystone-ca.pem
 # Installation details for SSL certificates
 keystone_pki_install_certificates:
   # Apache certificates
-  - src: "{{ keystone_user_ssl_cert | default(keystone_pki_certs_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '.crt') }}"
+  - src: "{{ keystone_user_ssl_cert | default(keystone_pki_certs_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
     dest: "{{ keystone_ssl_cert }}"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
@@ -316,7 +316,7 @@ keystone_pki_install_certificates:
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     mode: "0644"
-    condition: "{{ keystone_ssl }}"
+    condition: "{{ keystone_user_ssl_ca_cert is defined }}"
   # IDP certificates
   - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/certs/' ~ keystone_idp_authority_name ~ '.crt' }}"
     dest: "{{ keystone_idp['certfile'] | default('') }}"
