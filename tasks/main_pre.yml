@@ -67,16 +67,9 @@
       owner: root
       group: root
     - path: "/var/www/cgi-bin/keystone"
-    - path: "{{ keystone_security_txt_dir }}"
     - path: "/etc/ansible/facts.d"
       owner: root
       group: root
-
-- name: Create security.txt file
-  copy:
-    content: "{{ keystone_security_txt_content }}"
-    dest: "{{ keystone_security_txt_dir }}/security.txt"
-  when: keystone_security_txt_content is defined
 
 - import_tasks: keystone_key_setup.yml
   tags:
