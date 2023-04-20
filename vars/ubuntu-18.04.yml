@@ -82,7 +82,7 @@ keystone_apache_configs:
 
 keystone_apache_modules:
   - name: "ssl"
-    state: "{{ (keystone_ssl | bool) | ternary('present', 'absent') }}"
+    state: "{{ (keystone_backend_ssl | bool) | ternary('present', 'absent') }}"
   - name: "shib2"
     state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
   - name: "auth_openidc"
