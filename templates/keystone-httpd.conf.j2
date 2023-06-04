@@ -26,7 +26,7 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     RequestHeader set {{ keystone_secure_proxy_ssl_header }} "http"
     {% endif %}
 
-    {% if keystone_backend_ssl | bool and keystone_service_internaluri_proto == "https" -%}
+    {% if keystone_backend_ssl | bool -%}
     SSLEngine on
     SSLCertificateFile    {{ keystone_ssl_cert }}
     SSLCertificateKeyFile {{ keystone_ssl_key }}
