@@ -18,6 +18,7 @@
     {{ keystone_bin }}/keystone-manage saml_idp_metadata > {{ keystone_idp.idp_metadata_path }}
   become: yes
   become_user: "{{ keystone_system_user_name }}"
+  changed_when: false
   when: keystone_idp != {}
   notify:
     - Restart uWSGI

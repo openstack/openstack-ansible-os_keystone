@@ -29,12 +29,12 @@
       tags:
         - keystone-key
   vars:
-      ssh_keypairs_setup_host: "{{ keystone_ssh_keypairs_setup_host }}"
-      ssh_keypairs_dir: "{{ keystone_ssh_keypairs_dir }}"
-      ssh_keypairs: "{{ keystone_ssh_keypairs }}"
-      ssh_keypairs_install_keys: "{{ keystone_ssh_keypairs_install_keys }}"
-      ssh_keypairs_install_ca: "{{ keystone_ssh_keypairs_install_ca }}"
-      ssh_keypairs_principals: "{{ keystone_ssh_keypairs_principals }}"
+    ssh_keypairs_setup_host: "{{ keystone_ssh_keypairs_setup_host }}"
+    ssh_keypairs_dir: "{{ keystone_ssh_keypairs_dir }}"
+    ssh_keypairs: "{{ keystone_ssh_keypairs }}"
+    ssh_keypairs_install_keys: "{{ keystone_ssh_keypairs_install_keys }}"
+    ssh_keypairs_install_ca: "{{ keystone_ssh_keypairs_install_ca }}"
+    ssh_keypairs_principals: "{{ keystone_ssh_keypairs_principals }}"
   tags:
     - always
 

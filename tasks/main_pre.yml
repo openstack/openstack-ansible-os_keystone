@@ -13,19 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: create the system group
-  group:
-    name: "{{ keystone_system_group_name }}"
-    state: "present"
-    system: "yes"
-
-- name: create additional groups
+- name: Create system groups
   group:
     name: "{{ item }}"
     state: "present"
     system: "yes"
-  with_items:
-    - "{{ keystone_system_additional_groups }}"
+  with_items: "{{ [keystone_system_group_name] + keystone_system_additional_groups }}"
 
 - name: Create the keystone system user
   user:
@@ -44,8 +37,8 @@
     src: "{{ item.src | default(omit) }}"
     dest: "{{ item.dest | default(omit) }}"
     state: "{{ item.state | default('directory') }}"
-    owner: "{{ item.owner|default(keystone_system_user_name) }}"
-    group: "{{ item.group|default(keystone_system_group_name) }}"
+    owner: "{{ item.owner | default(keystone_system_user_name) }}"
+    group: "{{ item.group | default(keystone_system_group_name) }}"
     mode: "{{ item.mode | default(omit) }}"
     force: "{{ item.force | default(omit) }}"
   with_items:
@@ -71,6 +64,7 @@
       owner: root
       group: root
 
-- import_tasks: keystone_key_setup.yml
+- name: Importing keystone_key_setup tasks
+  import_tasks: keystone_key_setup.yml
   tags:
     - keystone-install

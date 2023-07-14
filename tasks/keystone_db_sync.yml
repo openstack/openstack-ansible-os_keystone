@@ -28,11 +28,12 @@
     section: keystone
     option: "{{ item.name }}"
     value: "{{ item.state }}"
+    mode: "0644"
   with_items:
     - name: "need_db_expand"
       state: "{{ (keystone_db_sync_check.rc | int == 2) | bool }}"
     - name: "need_db_migrate"
-      state: "{{ (keystone_db_sync_check.rc | int in [2, 3] ) | bool }}"
+      state: "{{ (keystone_db_sync_check.rc | int in [2, 3]) | bool }}"
     - name: "need_db_contract"
       state: "{{ (keystone_db_sync_check.rc | int in [2, 3, 4]) | bool }}"
 
@@ -46,7 +47,7 @@
 # When keystone is initially built, the service does not yet exist on the
 # host this task is executed on. Detect the presence of the services.
 - name: Test if keystone service exists
-  service:
+  service: # noqa: args[module]
     name: "{{ item }}"
   check_mode: yes
   register: keystone_service_exists
@@ -70,6 +71,7 @@
 
 - name: Perform a Keystone DB sync expand
   command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
+  changed_when: false
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   when:
@@ -79,6 +81,7 @@
 
 - name: Perform a Keystone DB sync migrate
   command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
+  changed_when: false
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   when:
@@ -88,6 +91,7 @@
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
+  changed_when: false
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   when:

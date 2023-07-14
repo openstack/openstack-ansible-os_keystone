@@ -107,6 +107,7 @@
   copy:
     src: "{{ keystone_sso_callback_file_path }}"
     dest: "/etc/keystone/sso_callback_template.html"
+    mode: "0644"
   when:
     - keystone_sso_callback_file_path is defined
   notify:

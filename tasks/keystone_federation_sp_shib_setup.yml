@@ -19,7 +19,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
-    mode: "{{ item.mode|default('0644') }}"
+    mode: "{{ item.mode | default('0644') }}"
   with_items:
     - { src: "shibboleth-attribute-map.xml.j2", dest: "/etc/shibboleth/attribute-map.xml" }
     - { src: "shibboleth2.xml.j2", dest: "/etc/shibboleth/shibboleth2.xml" }
@@ -29,8 +29,8 @@
 - name: Copy Shibboleth SP key-pair (if provided)
   copy:
     content: "{{ item.content }}"
-    dest: "{{ item.dest }}"  # noqa 206
-    mode: "{{ item.mode|default('0640') }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode | default('0640') }}"
   when:
     - _keystone_is_first_play_host
     - item.content | length > 0
@@ -66,8 +66,8 @@
 
 - name: Register a fact for the cert and key
   set_fact:
-     keystone_sp_cert_fact: "{{ _keystone_sp_cert.content }}"
-     keystone_sp_key_fact: "{{ _keystone_sp_key.content }}"
+    keystone_sp_cert_fact: "{{ _keystone_sp_cert.content }}"
+    keystone_sp_key_fact: "{{ _keystone_sp_key.content }}"
   when: _keystone_is_first_play_host
 
 - name: Distribute sp key

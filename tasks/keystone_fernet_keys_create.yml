@@ -18,7 +18,7 @@
     path: "{{ keystone_fernet_tokens_key_repository }}/0"
   register: _fernet_keys
 
-- name: Create fernet keys for Keystone
+- name: Create fernet keys for Keystone # noqa: no-changed-when
   command: >
     {{ keystone_bin }}/keystone-manage fernet_setup
                                        --keystone-user "{{ keystone_system_user_name }}"
@@ -27,7 +27,7 @@
   become_user: "{{ keystone_system_user_name }}"
   when: not _fernet_keys.stat.exists
 
-- name: Rotate fernet keys for Keystone
+- name: Rotate fernet keys for Keystone # noqa: no-changed-when
   command: >
     {{ keystone_bin }}/keystone-manage fernet_rotate
                                        --keystone-user "{{ keystone_system_user_name }}"

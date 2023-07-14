@@ -53,11 +53,12 @@
 
 - name: Fact for apache module shibboleth to be installed
   set_fact:
-    keystone_sp_apache_mod_shib:
-      "{{ (keystone_sp != {} and
-      (keystone_sp.apache_mod is undefined or
-      (keystone_sp.apache_mod is defined and keystone_sp.apache_mod != 'mod_auth_openidc'))
-      ) | ternary('true', 'false') }}"
+    keystone_sp_apache_mod_shib: >-
+      {{
+        (keystone_sp != {} and (keystone_sp.apache_mod is undefined or (
+          keystone_sp.apache_mod is defined and keystone_sp.apache_mod != 'mod_auth_openidc'))
+        ) | ternary('true', 'false')
+      }}
   tags:
     - always
 
@@ -70,7 +71,8 @@
   tags:
     - always
 
-- include_role:
+- name: Including osa.db_setup role
+  include_role:
     name: openstack.osa.db_setup
     apply:
       tags:
@@ -91,7 +93,8 @@
   tags:
     - always
 
-- include_role:
+- name: Including osa.mq_setup role
+  include_role:
     name: openstack.osa.mq_setup
     apply:
       tags:
@@ -113,40 +116,46 @@
   tags:
     - always
 
-- import_tasks: keystone_install.yml
+- name: Importing keystone_install tasks
+  import_tasks: keystone_install.yml
   tags:
     - keystone-install
 
-- name: refresh local facts
+- name: Refresh local facts
   setup:
     filter: ansible_local
     gather_subset: "!all"
   tags:
     - keystone-config
 
-- import_tasks: keystone_post_install.yml
+- name: Importing keystone_post_install tasks
+  import_tasks: keystone_post_install.yml
   tags:
     - keystone-config
 
-- import_tasks: keystone_fernet.yml
+- name: Importing keystone_fernet tasks
+  import_tasks: keystone_fernet.yml
   when:
     - "'fernet' in keystone_token_provider"
     - keystone_service_setup | bool
   tags:
     - keystone-config
 
-- import_tasks: keystone_db_sync.yml
+- name: Importing keystone_db_sync tasks
+  import_tasks: keystone_db_sync.yml
   when:
     - "keystone_database_enabled | bool"
   tags:
     - keystone-config
 
-- import_tasks: keystone_credential.yml
+- name: Importing keystone_credential tasks
+  import_tasks: keystone_credential.yml
   when: keystone_service_setup | bool
   tags:
     - keystone-config
 
-- import_tasks: keystone_federation_sp_shib_setup.yml
+- name: Importing keystone_federation_sp_shib_setup tasks
+  import_tasks: keystone_federation_sp_shib_setup.yml
   when:
     - keystone_sp_apache_mod_shib
     - not (keystone_use_uwsgi | bool)
@@ -172,7 +181,8 @@
   tags:
     - keystone-config
 
-- import_tasks: "keystone_apache.yml"
+- name: Importing keystone_apache tasks
+  import_tasks: "keystone_apache.yml"
   when:
     - not (keystone_use_uwsgi | bool)
   tags:
@@ -191,7 +201,8 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- include_tasks: keystone_service_bootstrap.yml
+- name: Including keystone_service_bootstrap tasks
+  include_tasks: keystone_service_bootstrap.yml
   args:
     apply:
       tags:
@@ -225,7 +236,8 @@
   retries: 12
   delay: 5
 
-- include_role:
+- name: Including osa.service_setup role
+  include_role:
     name: openstack.osa.service_setup
     apply:
       tags:
@@ -259,7 +271,8 @@
   tags:
     - always
 
-- import_tasks: keystone_ldap_setup.yml
+- name: Including keystone_ldap_setup tasks
+  import_tasks: keystone_ldap_setup.yml
   when:
     - keystone_service_setup | bool
     - keystone_ldap != {}
@@ -269,7 +282,8 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- include_tasks: keystone_idp_setup.yml
+- name: Including keystone_idp_setup tasks
+  include_tasks: keystone_idp_setup.yml
   args:
     apply:
       tags:

@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: keystone_fernet_keys_create.yml
+- name: Including keystone_fernet_keys_create tasks
+  include_tasks: keystone_fernet_keys_create.yml
   when: _keystone_is_first_play_host
 
-- include_tasks: keystone_fernet_keys_distribute.yml
+- name: Including keystone_fernet_keys_distribute tasks
+  include_tasks: keystone_fernet_keys_distribute.yml
   when: _keystone_is_first_play_host
 
-- include_tasks: keystone_fernet_keys_autorotate.yml
+- name: Including keystone_fernet_keys_autorotate tasks
+  include_tasks: keystone_fernet_keys_autorotate.yml

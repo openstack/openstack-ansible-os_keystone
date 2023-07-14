@@ -31,6 +31,7 @@
     state: directory
     owner: "{{ keystone_apache_default_log_owner }}"
     group: "{{ keystone_apache_default_log_grp }}"
+    mode: "0755"
 
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian
@@ -51,6 +52,7 @@
     dest: "{{ item.dest }}"
     owner: "root"
     group: "root"
+    mode: "0644"
   with_items: "{{ keystone_apache_configs }}"
   notify:
     - Restart web server
@@ -76,7 +78,7 @@
     line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
     state: "present"
   when:
-   - ansible_facts['pkg_mgr'] == 'dnf'
+    - ansible_facts['pkg_mgr'] == 'dnf'
   notify:
     - Restart web server
 
