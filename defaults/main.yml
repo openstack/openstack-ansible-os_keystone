@@ -681,3 +681,15 @@ keystone_ssh_keypairs_install_ca: "{{ openstack_ssh_keypairs_authorities }}"
 keystone_ssh_keypairs_principals:
   - user: "{{ keystone_system_user_name }}"
     principals: "{{ keystone_ssh_key_principals | default(['keystone']) }}"
+
+keystone_ssh_extra_configuration:
+  - regexp: "^PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+  - regexp: "^TCPKeepAlive"
+    line: "TCPKeepAlive yes"
+  - regexp: "^UseDNS"
+    line: "UseDNS no"
+  - regexp: "^X11Forwarding"
+    line: "X11Forwarding no"
+  - regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"

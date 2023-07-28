@@ -95,6 +95,11 @@
   retries: 5
   delay: 2
 
+- name: Restart ssh
+  service:
+    name: "sshd"
+    state: "restarted"
+
 - name: Flush all of the cache in memcached
   vars:
     nc_command:

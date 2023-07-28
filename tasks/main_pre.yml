@@ -13,6 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Gather variables for each operating system
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_facts['distribution'] | lower }}-{{ ansible_facts['distribution_version'] | lower }}.yml"
+        - "{{ ansible_facts['distribution'] | lower }}-{{ ansible_facts['distribution_major_version'] | lower }}.yml"
+        - "{{ ansible_facts['os_family'] | lower }}-{{ ansible_facts['distribution_major_version'] | lower }}.yml"
+        - "{{ ansible_facts['distribution'] | lower }}.yml"
+        - "{{ ansible_facts['os_family'] | lower }}.yml"
+      paths:
+        - "{{ role_path }}/vars"
+  tags:
+    - always
+
 - name: Create system groups
   group:
     name: "{{ item }}"
@@ -63,6 +78,29 @@
     - path: "/etc/ansible/facts.d"
       owner: root
       group: root
+
+- name: Install distro packages
+  package:
+    name: "{{ keystone_distro_packages }}"
+    state: "{{ keystone_package_state }}"
+    update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary(cache_timeout, omit) }}"
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 2
+  notify:
+    - Restart ssh
+
+- name: Adjust sshd configuration in container
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items: "{{ keystone_ssh_extra_configuration }}"
+  notify:
+    - Restart ssh
 
 - name: Importing keystone_key_setup tasks
   import_tasks: keystone_key_setup.yml
