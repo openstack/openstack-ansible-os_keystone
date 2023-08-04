@@ -17,6 +17,7 @@ cache_timeout: 600
 
 keystone_distro_packages:
   - git
+  - libldap-common
   - openssh-server
   - rsync
   - cron
