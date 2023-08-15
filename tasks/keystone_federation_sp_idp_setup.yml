@@ -74,7 +74,7 @@
       openstack.cloud.identity_role:
         cloud: default
         state: present
-        name: "{{ item.role | default('_member_') }}"
+        name: "{{ item.role | default('member') }}"
         interface: admin
         verify: "{{ keystone_service_adminuri_insecure }}"
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
@@ -89,7 +89,7 @@
         state: present
         group: "{{ item.group }}"
         project: "{{ item.project }}"
-        role: "{{ item.role | default('_member_') }}"
+        role: "{{ item.role | default('member') }}"
         interface: admin
         verify: "{{ keystone_service_adminuri_insecure }}"
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
