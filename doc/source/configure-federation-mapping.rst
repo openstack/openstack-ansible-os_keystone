@@ -14,7 +14,7 @@ of federated_identities is not required.
         - domain: default
           project: fedproject
           group: fedgroup
-          role: _member_
+          role: member
 
 #. ``project``: The project that federation users have access to.
    If the project does not already exist, create it in the
@@ -42,13 +42,13 @@ Ansible implements the equivalent of the following OpenStack CLI commands:
   openstack group create fedgroup --domain Default
 
   # if the role does not already exist
-  openstack role create _member_
+  openstack role create member
 
   # if the project does not already exist
   openstack project create --domain default fedproject
 
   # map the role to the project and user group in the domain
-  openstack role add --project fedproject --group fedgroup _member_
+  openstack role add --project fedproject --group fedgroup member
 
 To extend simply add more entries to the list.
 For example:
@@ -59,11 +59,11 @@ For example:
         - domain: default
           project: fedproject
           group: fedgroup
-          role: _member_
+          role: member
         - domain: default
           project: fedproject2
           group: fedgroup2
-          role: _member_
+          role: member
 
 Keystone federation attribute mapping
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

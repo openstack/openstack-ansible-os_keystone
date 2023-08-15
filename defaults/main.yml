@@ -434,7 +434,7 @@ keystone_sp: {}
 #        - domain: default
 #          project: fedproject
 #          group: fedgroup
-#          role: _member_
+#          role: member
 #      protocols:
 #        - name: saml2
 #          mapping:
@@ -471,7 +471,7 @@ keystone_sp: {}
 #        - domain: default
 #          project: fedproject
 #          group: fedgroup
-#          role: _member_
+#          role: member
 #      protocols:
 #        - name: saml2
 #          mapping:
@@ -497,7 +497,7 @@ keystone_sp: {}
 #        - domain: default
 #          project: fedproject
 #          group: fedgroup
-#          role: _member_
+#          role: member
 #      protocols:
 #        - name: saml2
 #          mapping:
@@ -536,7 +536,7 @@ keystone_sp: {}
 #        - domain: default
 #          project: fedproject
 #          group: fedgroup
-#          role: _member_
+#          role: member
 #      protocols:
 #        - name: openid
 #          mapping:
