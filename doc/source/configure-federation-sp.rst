@@ -145,7 +145,7 @@ service provider to an IDP using Shibboleth with CADF notifications on.
               - domain: default
                 project: fedproject
                 group: fedgroup
-                role: _member_
+                role: member
             protocols:
               - name: saml2
                 mapping:
@@ -259,7 +259,7 @@ multiple clouds.
               - domain: default
                 project: fedproject
                 group: fedgroup
-                role: _member_
+                role: member
             protocols:
               - name: saml2
                 mapping:
@@ -380,7 +380,7 @@ service provider to an IDP using mod_auth_openidc with CADF notifications on.
               - domain: default
                 project: fedproject
                 group: fedgroup
-                role: _member_
+                role: member
             protocols:
               - name: openid
                 mapping:
