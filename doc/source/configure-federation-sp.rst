@@ -116,6 +116,7 @@ SAML-based deployments.
 #. ``protocols.attributes`` add to the Shibboleth attributes mapping
    directory. See `Configure Identity Service (keystone) mappings`_
    for more information.
+
    .. _Configure Identity Service (keystone) mappings: configure-federation-mapping.html
 
 Below is an example keystone_sp for setting up keystone to be a SAML-based
