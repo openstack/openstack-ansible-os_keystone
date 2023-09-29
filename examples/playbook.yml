@@ -3,7 +3,9 @@
   hosts: keystone_all
   user: root
   roles:
-    - { role: "os_keystone", tags: [ "os-keystone" ] }
+    - role: os_keystone
+      tags:
+        - os-keystone
   vars:
     external_lb_vip_address: 10.100.100.102
     internal_lb_vip_address: 10.100.100.102
