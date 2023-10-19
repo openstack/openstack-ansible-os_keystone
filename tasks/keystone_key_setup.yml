@@ -37,9 +37,3 @@
     ssh_keypairs_principals: "{{ keystone_ssh_keypairs_principals }}"
   tags:
     - always
-
-# TODO (jrosser) Remove this task for the Z release
-- name: Remove legacy authorized keys file
-  file:
-    path: "{{ keystone_system_user_name }}/.ssh/authorized_keys"
-    state: absent
