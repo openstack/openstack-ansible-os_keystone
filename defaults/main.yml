@@ -535,7 +535,7 @@ keystone_sp: {}
 #       oidc_client_id: keystone
 #       oidc_client_secret: secret
 #       oidc_crypto_passphrase: random string
-#       oidc_redirect_uri: https://keystone:5000/v3/OS-FEDERATION/identity_providers/keycloak-idp/protocols/openid/auth
+#       oidc_redirect_path: /oidc_redirect
 #       oidc_oauth_introspection_endpoint: endpoint address (optional)
 #       oidc_oauth_client_id: string (optional)
 #       oidc_oauth_client_secret: secret (optional)

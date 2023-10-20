@@ -310,10 +310,10 @@ for mod_auth_openidc OIDC-based deployments.
    restrictions for this password. This should be set to a randomly generated
    string of a sensible length.
 
-#. ``oidc_redirect_uri`` is the redirect_uri for this OpenID Connect
-   client; this is a vanity URL that must ONLY point to a path on your
-   server protected by this module but it must NOT point to any actual
-   content that needs to be served.
+#. ``oidc_redirect_path`` is the path component of the redirect_uri for this
+   OpenID Connect client; this is a vanity URL that must ONLY point to a path
+   on your server protected by this module but it must NOT point to any
+   actual content that needs to be served.
 
 #. ``oidc_claim_prefix`` is the prefix to use when setting claims in the
    HTTP headers/environment variables. Defaults to 'OIDC-'.
@@ -373,7 +373,7 @@ service provider to an IDP using mod_auth_openidc with CADF notifications on.
             oidc_client_id: keystone
             oidc_client_secret: <SECRET>
             oidc_crypto_passphrase: <RANDOM STRING>
-            oidc_redirect_uri: https://{{external_lb_vip_address}}:5000/v3/OS-FEDERATION/identity_providers/oidc-idp/protocols/openid/auth
+            oidc_redirect_path: /oidc_redirect
             oidc_auth_request_params: param=some+url+encoded+value&param2=and+another+one
             entity_ids:
               - 'https://identity-provider/openid-endpoint/'
