@@ -45,6 +45,19 @@ _keystone_is_last_play_host: >-
     (keystone_services['keystone-wsgi-public']['group'] in group_names and
       inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | intersect(ansible_play_hosts)) | list)[-1]) | bool
   }}
+
+_keystone_oslomsg_rpc_vhost_conf: >-
+  {{
+    (keystone_oslomsg_rpc_vhost is string) | ternary(
+      keystone_oslomsg_rpc_vhost, keystone_oslomsg_rpc_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+
+_keystone_oslomsg_notify_vhost_conf: >-
+  {{
+    (keystone_oslomsg_notify_vhost is string) | ternary(
+      keystone_oslomsg_notify_vhost, keystone_oslomsg_notify_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+
 _keystone_cache_backend_map:
   dogpile:
     - oslo_cache.memcache_pool

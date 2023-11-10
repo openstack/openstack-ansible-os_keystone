@@ -24,7 +24,12 @@ notification_opt_out = {{ opt_out }}
 {% endif %}
 
 ## Oslo.Messaging RPC
-transport_url = {{ keystone_oslomsg_rpc_transport }}://{% for host in keystone_oslomsg_rpc_servers.split(',') %}{{ keystone_oslomsg_rpc_userid }}:{{ keystone_oslomsg_rpc_password }}@{{ host }}:{{ keystone_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ keystone_oslomsg_rpc_vhost }}{% if keystone_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ keystone_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ keystone_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+transport_url = {{ keystone_oslomsg_rpc_transport }}://{% for host in keystone_oslomsg_rpc_servers.split(',') %}{{ keystone_oslomsg_rpc_userid }}:{{ keystone_oslomsg_rpc_password }}@{{ host }}:{{ keystone_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ _keystone_oslomsg_rpc_vhost_conf }}{% if keystone_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ keystone_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ keystone_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+
+[oslo_messaging_rabbit]
+rabbit_quorum_queue = {{ keystone_oslomsg_rabbit_quorum_queues }}
+rabbit_quorum_delivery_limit = {{ keystone_oslomsg_rabbit_quorum_delivery_limit }}
+rabbit_quorum_max_memory_bytes = {{ keystone_oslomsg_rabbit_quorum_max_memory_bytes }}
 
 [oslo_messaging_notifications]
 {% if keystone_ceilometer_enabled | bool %}
@@ -39,7 +44,7 @@ driver = log
 driver = noop
 {% endif %}
 
-transport_url = {{ keystone_oslomsg_notify_transport }}://{% for host in keystone_oslomsg_notify_servers.split(',') %}{{ keystone_oslomsg_notify_userid }}:{{ keystone_oslomsg_notify_password }}@{{ host }}:{{ keystone_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ keystone_oslomsg_notify_vhost }}{% if keystone_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ keystone_oslomsg_notify_ssl_version }}&ssl_ca_file={{ keystone_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+transport_url = {{ keystone_oslomsg_notify_transport }}://{% for host in keystone_oslomsg_notify_servers.split(',') %}{{ keystone_oslomsg_notify_userid }}:{{ keystone_oslomsg_notify_password }}@{{ host }}:{{ keystone_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ _keystone_oslomsg_notify_vhost_conf }}{% if keystone_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ keystone_oslomsg_notify_ssl_version }}&ssl_ca_file={{ keystone_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 {% if keystone_cache_servers | length > 0 %}
 [cache]
