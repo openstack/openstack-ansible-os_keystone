@@ -18,6 +18,43 @@
     path: "{{ keystone_fernet_tokens_key_repository }}/0"
   register: _fernet_keys
 
+- name: Check for fernet keys on all Keystone containers
+  find:
+    paths: "{{ keystone_fernet_tokens_key_repository }}"
+  when: not _fernet_keys.stat.exists
+  register: _fernet_key_list
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['keystone_all'] }}"
+
+- name: Identify hosts with existing fernet keys
+  set_fact:
+    existing_fernet_hosts: >-
+      {% set _var = [] -%}
+      {% for result in _fernet_key_list.results -%}
+      {%   if result.files is defined and (result.files | length) > 0 -%}
+      {%       if _var.append(result.item) -%}{% endif -%}
+      {%   endif -%}
+      {% endfor -%}
+      {{ _var }}
+  when: not _fernet_key_list is skipped
+
+- name: Copy the fernet key repository to the primary
+  command: >
+    rsync -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+          -avz
+          --delete
+          {{ keystone_system_user_name }}@{{ existing_fernet_hosts[0] }}:{{ keystone_fernet_tokens_key_repository }}/
+          {{ keystone_fernet_tokens_key_repository }}/
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
+  changed_when: false
+  register: _fernet_keys_shared
+  when:
+    - existing_fernet_hosts is defined
+    - (existing_fernet_hosts | length) > 0
+  tags:
+    - skip_ansible_lint
+
 - name: Create fernet keys for Keystone # noqa: no-changed-when
   command: >
     {{ keystone_bin }}/keystone-manage fernet_setup
@@ -25,7 +62,9 @@
                                        --keystone-group "{{ keystone_system_group_name }}"
   become: yes
   become_user: "{{ keystone_system_user_name }}"
-  when: not _fernet_keys.stat.exists
+  when:
+    - not _fernet_keys.stat.exists
+    - _fernet_keys_shared is skipped
 
 - name: Rotate fernet keys for Keystone # noqa: no-changed-when
   command: >
