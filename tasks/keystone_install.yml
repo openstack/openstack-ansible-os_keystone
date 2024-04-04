@@ -112,6 +112,17 @@
         option: venv_tag
         value: "{{ keystone_venv_tag }}"
 
+    # NOTE(noonedeadpunk): Ubuntu packages does recursively chmod all files
+    #                      for keystone user $HOME:
+    #                      https://bugs.launchpad.net/cloud-archive/+bug/2060235
+    - name: Ensure SSH keys has right permissions
+      file:
+        path: "{{ keystone_system_user_home }}/.ssh/id_rsa"
+        mode: "0600"
+      when:
+        - install_packages is changed
+        - ansible_facts['distribution'] | lower == 'ubuntu'
+
     - name: Initialise the upgrade facts
       ini_file:
         dest: "/etc/ansible/facts.d/openstack_ansible.fact"
