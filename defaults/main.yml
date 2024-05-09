@@ -129,6 +129,7 @@ keystone_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | 
 keystone_messaging_enabled: true
 
 # RPC
+keystone_oslomsg_rpc_configure: False
 keystone_oslomsg_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
 keystone_oslomsg_rpc_setup_host: "{{ (keystone_oslomsg_rpc_host_group in groups) | ternary(groups[keystone_oslomsg_rpc_host_group][0], 'localhost') }}"
 keystone_oslomsg_rpc_transport: "{{ oslomsg_rpc_transport | default('rabbit') }}"
@@ -148,6 +149,7 @@ keystone_oslomsg_rpc_ssl_version: "{{ oslomsg_rpc_ssl_version | default('TLSv1_2
 keystone_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
 # Notify
+keystone_oslomsg_notify_configure: "{{ oslomsg_notify_configure | default(keystone_ceilometer_enabled) }}"
 keystone_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
 keystone_oslomsg_notify_setup_host: >-
   {{ (keystone_oslomsg_notify_host_group in groups) | ternary(groups[keystone_oslomsg_notify_host_group][0], 'localhost') }}
