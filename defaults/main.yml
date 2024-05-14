@@ -461,7 +461,7 @@ keystone_sp: {}
 #       metadata_file: 'metadata-keystone-idp.xml'
 #       metadata_reload: 1800
 #       federated_identities:
-#         - domain: default
+#         - domain: Default
 #           project: fedproject
 #           group: fedgroup
 #           role: member
@@ -498,7 +498,7 @@ keystone_sp: {}
 #       metadata_file: 'metadata-testshib-idp.xml'
 #       metadata_reload: 1800
 #       federated_identities:
-#         - domain: default
+#         - domain: Default
 #           project: fedproject
 #           group: fedgroup
 #           role: member
@@ -524,7 +524,7 @@ keystone_sp: {}
 #       metadata_file: 'metadata-adfs-idp.xml'
 #       metadata_reload: 1800
 #       federated_identities:
-#         - domain: default
+#         - domain: Default
 #           project: fedproject
 #           group: fedgroup
 #           role: member
@@ -563,7 +563,7 @@ keystone_sp: {}
 #       entity_ids:
 #         - 'https://identity-provider/openid-endpoint/'
 #       federated_identities:
-#         - domain: default
+#         - domain: Default
 #           project: fedproject
 #           group: fedgroup
 #           role: member
