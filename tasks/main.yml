@@ -136,6 +136,7 @@
   import_tasks: keystone_post_install.yml
   tags:
     - keystone-config
+    - post-install
 
 - name: Importing keystone_fernet tasks
   import_tasks: keystone_fernet.yml
