@@ -32,6 +32,9 @@ rabbit_quorum_queue = {{ keystone_oslomsg_rabbit_quorum_queues }}
 rabbit_transient_quorum_queue = {{ keystone_oslomsg_rabbit_transient_quorum_queues }}
 rabbit_qos_prefetch_count = {{ keystone_oslomsg_rabbit_qos_prefetch_count }}
 use_queue_manager = {{ keystone_oslomsg_rabbit_queue_manager }}
+{% if keystone_oslomsg_rabbit_queue_manager %}
+hostname = {{ [ansible_facts['hostname'], keystone_service_name] | join('-') }}
+{% endif %}
 rabbit_stream_fanout = {{ keystone_oslomsg_rabbit_stream_fanout }}
 rabbit_quorum_delivery_limit = {{ keystone_oslomsg_rabbit_quorum_delivery_limit }}
 rabbit_quorum_max_memory_bytes = {{ keystone_oslomsg_rabbit_quorum_max_memory_bytes }}
