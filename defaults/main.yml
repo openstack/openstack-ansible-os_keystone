@@ -331,9 +331,6 @@ keystone_ssl_cipher_suite_tls13: "{{ ssl_cipher_suite_tls13 | default('TLS_AES_1
 #keystone_user_ssl_key: <path to cert on ansible deployment host>
 #keystone_user_ssl_ca_cert: <path to cert on ansible deployment host>
 
-# Set to true when terminating SSL/TLS at a load balancer
-keystone_external_ssl: "{{ (haproxy_ssl | default(True)) | bool }}"
-
 # External SSL forwarding proto
 keystone_secure_proxy_ssl_header: X-Forwarded-Proto
 
