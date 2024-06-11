@@ -26,7 +26,9 @@ notification_opt_out = {{ opt_out }}
 {% if keystone_oslomsg_rpc_configure %}
 ## Oslo.Messaging RPC
 transport_url = {{ keystone_oslomsg_rpc_transport }}://{% for host in keystone_oslomsg_rpc_servers.split(',') %}{{ keystone_oslomsg_rpc_userid }}:{{ keystone_oslomsg_rpc_password }}@{{ host }}:{{ keystone_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ _keystone_oslomsg_rpc_vhost_conf }}{% if keystone_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ keystone_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ keystone_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+{% endif %}
 
+{% if keystone_oslomsg_rpc_configure or keystone_oslomsg_notify_configure %}
 [oslo_messaging_rabbit]
 rabbit_quorum_queue = {{ keystone_oslomsg_rabbit_quorum_queues }}
 rabbit_transient_quorum_queue = {{ keystone_oslomsg_rabbit_transient_quorum_queues }}
