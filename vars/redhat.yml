@@ -45,6 +45,9 @@ keystone_apache_distro_packages:
 keystone_idp_distro_packages:
   - xmlsec1
 
+# From 2.4.11, mod_auth_openidc ignores X-Forwarded headers unless explicitly configured
+_keystone_sp_apache_mod_auth_openidc_gte_2_4_11: True
+
 keystone_sp_apache_mod_packages:
   - name: shibboleth
     state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"

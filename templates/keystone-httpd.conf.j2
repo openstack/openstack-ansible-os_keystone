@@ -47,7 +47,7 @@ Listen {{ keystone_web_server_bind_address }}:{{ keystone_service_port }}
     OIDCClientSecret {{ keystone_sp.trusted_idp_list.0.oidc_client_secret }}
     OIDCCryptoPassphrase {{ keystone_sp.trusted_idp_list.0.oidc_crypto_passphrase }}
     OIDCRedirectURI {{ keystone_service_publicuri }}{{ keystone_sp.trusted_idp_list.0.oidc_redirect_path | default('/oidc_redirect') }}
-    {% if _keystone_sp_apache_mod_auth_openidc_gte_2_4_11 is defined -%}
+    {% if _keystone_sp_apache_mod_auth_openidc_gte_2_4_11 is defined and _keystone_sp_apache_mod_auth_openidc_gte_2_4_11 -%}
     OIDCXForwardedHeaders {{ keystone_secure_proxy_ssl_header }}
     {% endif -%}
     {% if keystone_sp.trusted_idp_list.0.oidc_auth_verify_jwks_uri is defined -%}
