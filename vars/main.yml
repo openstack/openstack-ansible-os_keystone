@@ -38,12 +38,12 @@ uwsgi_keystone_services: |-
 _keystone_is_first_play_host: >-
   {{
     (keystone_services['keystone-wsgi-public']['group'] in group_names and
-      inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | intersect(ansible_play_hosts)) | list)[0]) | bool
+      inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | select('in', ansible_play_hosts)) | list)[0]) | bool
   }}
 _keystone_is_last_play_host: >-
   {{
     (keystone_services['keystone-wsgi-public']['group'] in group_names and
-      inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | intersect(ansible_play_hosts)) | list)[-1]) | bool
+      inventory_hostname == ((groups[keystone_services['keystone-wsgi-public']['group']] | select('in', ansible_play_hosts)) | list)[-1]) | bool
   }}
 
 _keystone_oslomsg_rpc_vhost_conf: >-
