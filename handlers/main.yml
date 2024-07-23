@@ -97,7 +97,7 @@
 
 - name: Restart ssh
   service:
-    name: "sshd"
+    name: "{{ keystone_sshd }}"
     state: "restarted"
 
 - name: Flush all of the cache in memcached
