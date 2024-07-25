@@ -72,11 +72,10 @@
 
 - name: Wait for uWSGI socket to be ready
   wait_for:
-    port: "{{ item }}"
+    host: "{{ (keystone_use_uwsgi | bool) | ternary(keystone_uwsgi_bind_address, '127.0.0.1') }}"
+    port: "{{ (keystone_use_uwsgi | bool) | ternary(keystone_service_port, keystone_uwsgi_ports['keystone-wsgi-public']['socket']) }}"
     timeout: 25
     delay: 10
-  with_items:
-    - "{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
   register: _wait_check
   until: _wait_check is success
   retries: 5
