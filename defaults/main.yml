@@ -588,7 +588,6 @@ keystone_pip_packages:
   - "{{ _keystone_cache_backend_package }}"
   - python-openstackclient
   - systemd-python
-  - uWSGI
   - pyngus
 
 # Specific pip packages provided by the user
