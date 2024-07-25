@@ -40,8 +40,6 @@ keystone_devel_distro_packages:
 keystone_service_distro_packages:
   - python3-keystone
   - python3-systemd
-  - uwsgi
-  - uwsgi-plugin-python3
 
 keystone_apache_distro_packages:
   - apache2
