@@ -79,6 +79,14 @@ keystone_apache_configs:
   - { src: "keystone-httpd.conf.j2", dest: "/etc/apache2/sites-available/keystone-httpd.conf" }
   - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/apache2/mods-available/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
 
+keystone_apache_mpms:
+  - name: "mpm_event"
+    state: "{{ (keystone_httpd_mpm_backend == 'event') | ternary('present', 'absent') }}"
+  - name: "mpm_worker"
+    state: "{{ (keystone_httpd_mpm_backend == 'worker') | ternary('present', 'absent') }}"
+  - name: "mpm_prefork"
+    state: "{{ (keystone_httpd_mpm_backend == 'prefork') | ternary('present', 'absent') }}"
+
 keystone_apache_modules:
   - name: "ssl"
     state: "{{ (keystone_backend_ssl | bool) | ternary('present', 'absent') }}"

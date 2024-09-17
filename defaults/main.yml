@@ -232,7 +232,7 @@ keystone_apache_servertokens: "Prod"
 keystone_apache_serversignature: "Off"
 
 ## Apache MPM tunables
-keystone_httpd_mpm_backend: event
+keystone_httpd_mpm_backend: "{{ openstack_apache_mpm_backend | default('event') }}"
 keystone_httpd_mpm_server_limit: "{{ keystone_wsgi_processes }}"
 keystone_httpd_mpm_start_servers: 2
 keystone_httpd_mpm_min_spare_threads: 25
