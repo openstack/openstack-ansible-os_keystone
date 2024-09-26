@@ -85,9 +85,6 @@
         option: "need_db_expand"
         value: "True"
       - section: "keystone"
-        option: "need_db_migrate"
-        value: "True"
-      - section: "keystone"
         option: "need_db_contract"
         value: "True"
       - section: "keystone"
@@ -134,8 +131,6 @@
       with_items:
         - name: "need_db_expand"
           state: "True"
-        - name: "need_db_migrate"
-          state: "True"
         - name: "need_db_contract"
           state: "True"
         - name: "install_method"
@@ -145,7 +140,6 @@
             ('openstack_ansible' not in ansible_local) or
             ('keystone' not in ansible_local['openstack_ansible']) or
             ('need_db_expand' not in ansible_local['openstack_ansible']['keystone']) or
-            ('need_db_migrate' not in ansible_local['openstack_ansible']['keystone']) or
             ('need_db_contract' not in ansible_local['openstack_ansible']['keystone'])
 
 - name: Create WSGI symlinks

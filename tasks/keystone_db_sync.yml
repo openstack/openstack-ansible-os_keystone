@@ -32,8 +32,6 @@
   with_items:
     - name: "need_db_expand"
       state: "{{ (keystone_db_sync_check.rc | int == 2) | bool }}"
-    - name: "need_db_migrate"
-      state: "{{ (keystone_db_sync_check.rc | int in [2, 3]) | bool }}"
     - name: "need_db_contract"
       state: "{{ (keystone_db_sync_check.rc | int in [2, 3, 4]) | bool }}"
 
@@ -63,8 +61,7 @@
   delay: 2
   with_items: "{{ keystone_service_exists.results }}"
   when:
-    - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
-       (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
+    - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool)"
     - "(item.status['LoadState'] == 'loaded' | bool)"
   notify:
     - Restart uWSGI
@@ -76,16 +73,6 @@
   become_user: "{{ keystone_system_user_name }}"
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
-  run_once: yes
-  notify: flush cache
-
-- name: Perform a Keystone DB sync migrate
-  command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
-  changed_when: false
-  become: yes
-  become_user: "{{ keystone_system_user_name }}"
-  when:
-    - "ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool"
   run_once: yes
   notify: flush cache
 
