@@ -100,6 +100,8 @@
 
     - name: Ensure mapping for external IDP attributes exists
       openstack.cloud.federation_mapping:
+        cloud: default
+        state: present
         name: "{{ item.mapping.name }}"
         rules: "{{ item.mapping.rules }}"
         interface: admin
@@ -110,6 +112,8 @@
 
     - name: Ensure external IDP
       openstack.cloud.federation_idp:
+        cloud: default
+        state: present
         name: "{{ trusted_idp.name }}"
         remote_ids: "{{ trusted_idp.entity_ids }}"
         enabled: true
@@ -121,6 +125,8 @@
 
     - name: Ensure federation protocol exists
       openstack.cloud.keystone_federation_protocol:
+        cloud: default
+        state: present
         name: "{{ item.name }}"
         idp_name: "{{ trusted_idp.name }}"
         mapping_id: "{{ item.mapping.name }}"
