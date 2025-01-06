@@ -76,10 +76,7 @@
     venv_build_distro_package_list: "{{ keystone_devel_distro_packages }}"
     venv_install_destination_path: "{{ keystone_bin | dirname }}"
     venv_pip_install_args: "{{ keystone_pip_install_args }}"
-    venv_pip_packages: >-
-      {{ keystone_pip_packages |
-           union(keystone_user_pip_packages) |
-             union(((keystone_oslomsg_amqp1_enabled | bool) | ternary(keystone_optional_oslomsg_amqp1_pip_packages, []))) }}
+    venv_pip_packages: "{{ keystone_pip_packages | union(keystone_user_pip_packages) }}"
     venv_facts_when_changed:
       - section: "keystone"
         option: "need_db_expand"

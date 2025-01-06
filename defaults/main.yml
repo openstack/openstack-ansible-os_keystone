@@ -173,10 +173,6 @@ keystone_oslomsg_rabbit_queue_manager: "{{ oslomsg_rabbit_queue_manager | defaul
 keystone_oslomsg_rabbit_quorum_delivery_limit: "{{ oslomsg_rabbit_quorum_delivery_limit | default(0) }}"
 keystone_oslomsg_rabbit_quorum_max_memory_bytes: "{{ oslomsg_rabbit_quorum_max_memory_bytes | default(0) }}"
 
-## (Qdrouterd) info
-# TODO(ansmith): Change structure when more backends will be supported
-keystone_oslomsg_amqp1_enabled: "{{ keystone_oslomsg_rpc_transport == 'amqp' }}"
-
 ## Role info
 keystone_role_name: admin
 
@@ -599,10 +595,6 @@ keystone_pip_packages:
 
 # Specific pip packages provided by the user
 keystone_user_pip_packages: []
-
-# optional pip packages
-keystone_optional_oslomsg_amqp1_pip_packages:
-  - oslo.messaging[amqp1]
 
 # NOTE(cloudnull): Tunable SSO callback file file-based overrides If defined,
 #                  it'll be read from the deployment host, interpreted by the

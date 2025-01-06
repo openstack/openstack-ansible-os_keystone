@@ -62,10 +62,6 @@ keystone_sp_apache_mod_packages:
 keystone_developer_mode_distro_packages:
   - build-essential
 
-keystone_oslomsg_amqp1_distro_packages:
-  - libsasl2-modules
-  - sasl2-bin
-
 keystone_apache_default_sites:
   - "/etc/apache2/sites-enabled/000-default.conf"
 

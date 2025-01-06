@@ -23,9 +23,6 @@ keystone_package_list: |-
   {% if keystone_idp != {} %}
   {%   set _ = packages.extend(keystone_idp_distro_packages) %}
   {% endif %}
-  {% if keystone_oslomsg_amqp1_enabled | bool %}
-  {%   set _ = packages.extend(keystone_oslomsg_amqp1_distro_packages) %}
-  {% endif %}
   {{ packages }}
 
 _keystone_bin: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin"

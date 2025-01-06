@@ -55,11 +55,6 @@ keystone_sp_apache_mod_packages:
 keystone_developer_mode_distro_packages:
   - gcc
 
-keystone_oslomsg_amqp1_distro_packages:
-  - cyrus-sasl-lib
-  - cyrus-sasl-plain
-  - cyrus-sasl-md5
-
 keystone_apache_default_sites:
   - "/etc/httpd/conf.d/userdir.conf"
   - "/etc/httpd/conf.d/welcome.conf"
