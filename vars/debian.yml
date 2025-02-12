@@ -51,7 +51,7 @@ keystone_idp_distro_packages:
   - xmlsec1
 
 # From 2.4.11, mod_auth_openidc ignores X-Forwarded headers unless explicitly configured
-_keystone_sp_apache_mod_auth_openidc_gte_2_4_11: True
+_keystone_sp_apache_mod_auth_openidc_gte_2_4_11: true
 
 keystone_sp_apache_mod_packages:
   - name: libapache2-mod-shib
@@ -103,6 +103,6 @@ keystone_apache_modules:
 
 keystone_system_service_name: "{{ (keystone_use_uwsgi | bool) | ternary('keystone-wsgi-public', 'apache2') }}"
 
-keystone_uwsgi_bin: '/usr/bin'
+keystone_uwsgi_bin: "/usr/bin"
 
 keystone_sshd: ssh

@@ -8,6 +8,6 @@
   when:
     - keystone_service_setup | bool
     - keystone_sp != {}
-  run_once: yes
+  run_once: true
   tags:
     - keystone-config

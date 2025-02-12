@@ -42,7 +42,7 @@
     description: "shibboleth Repo"
     baseurl: "{{ keystone_centos_shibboleth_mirror }}"
     gpgkey: "{{ keystone_centos_shibboleth_key }}"
-    gpgcheck: yes
+    gpgcheck: true
   when:
     - ansible_facts['pkg_mgr'] == 'dnf'
     - keystone_sp != {}
@@ -144,6 +144,6 @@
     src: "{{ keystone_bin }}/keystone-wsgi-public"
     dest: "/var/www/cgi-bin/keystone/main"
     state: link
-    force: yes
+    force: true
   notify:
     - Restart web server

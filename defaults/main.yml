@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ## Verbosity Options
-debug: False
+debug: false
 
 # Set the host which will execute the shade modules
 # for the service setup. The host must already have
@@ -54,7 +54,7 @@ keystone_pip_install_args: "{{ pip_install_options | default('') }}"
 keystone_venv_tag: "{{ venv_tag | default('untagged') }}"
 keystone_bin: "{{ _keystone_bin }}"
 
-keystone_fatal_deprecations: False
+keystone_fatal_deprecations: false
 
 ## System info
 keystone_system_user_name: keystone
@@ -129,7 +129,7 @@ keystone_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | 
 keystone_messaging_enabled: true
 
 # RPC
-keystone_oslomsg_rpc_configure: False
+keystone_oslomsg_rpc_configure: false
 keystone_oslomsg_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
 keystone_oslomsg_rpc_setup_host: "{{ (keystone_oslomsg_rpc_host_group in groups) | ternary(groups[keystone_oslomsg_rpc_host_group][0], 'localhost') }}"
 keystone_oslomsg_rpc_transport: "{{ oslomsg_rpc_transport | default('rabbit') }}"
@@ -272,10 +272,10 @@ keystone_pki_certs_path: "{{ keystone_pki_dir ~ '/certs/certs/' }}"
 keystone_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name }}"
 keystone_pki_intermediate_cert_path: >-
   {{ keystone_pki_dir ~ '/roots/' ~ keystone_pki_intermediate_cert_name ~ '/certs/' ~ keystone_pki_intermediate_cert_name ~ '.crt' }}
-keystone_pki_regen_cert: ''
+keystone_pki_regen_cert: ""
 
 # By default, CA creation is controlled using the CA 'condition' field
-keystone_pki_create_ca: True
+keystone_pki_create_ca: true
 # An optional private certificate authority for when Keystone is an IDP
 keystone_idp_authority_name: "KeystoneIDPAuthority"
 keystone_pki_authorities:
@@ -294,7 +294,7 @@ keystone_pki_authorities:
     condition: "{{ (keystone_idp['certfile'] is defined) and _keystone_is_first_play_host }}"
 
 # By default, certificate creation is controlled using the certificates 'condition' field
-keystone_pki_create_certificates: True
+keystone_pki_create_certificates: true
 # Server certificate for Apache
 keystone_pki_certificates:
   - name: "keystone_{{ ansible_facts['hostname'] }}"
@@ -305,7 +305,7 @@ keystone_pki_certificates:
     condition: "{{ keystone_backend_ssl }}"
 
 # Set to the value of keystone_idp_authority_name to regenerate the IDP CA
-keystone_pki_regen_ca: ''
+keystone_pki_regen_ca: ""
 
 # keystone destination files for Apache SSL certificates
 keystone_ssl_cert: /etc/ssl/certs/keystone.pem
@@ -394,7 +394,6 @@ keystone_cache_servers: "{{ keystone_memcached_servers.split(',') }}"
 
 keystone_ldap: {}
 keystone_ldap_domain_config_dir: /etc/keystone/domains
-
 
 ## Policy vars
 # Provide a list of access controls to update the default policy.json with. These changes will be merged
@@ -628,7 +627,7 @@ keystone_uwsgi_init_overrides: {}
 keystone_services:
   keystone-wsgi-public:
     group: keystone_all
-    wsgi_app: True
+    wsgi_app: true
     wsgi_path: "{{ keystone_bin }}/keystone-wsgi-public"
     uwsgi_overrides: >-
       {{
@@ -661,7 +660,7 @@ keystone_set_real_ip_from: []
 # database migrations. This is sometimes useful when
 # doing upgrades, but should not usually be required.
 # ref: https://bugs.launchpad.net/openstack-ansible/+bug/1793389
-keystone_flush_memcache: no
+keystone_flush_memcache: false
 
 # host which holds the ssh certificate authority
 keystone_ssh_keypairs_setup_host: "{{ openstack_ssh_keypairs_setup_host | default('localhost') }}"

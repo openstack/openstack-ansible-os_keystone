@@ -301,12 +301,12 @@
 
 - name: Diagnose common problems with keystone deployments
   command: "{{ keystone_bin }}/keystone-manage doctor"
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   register: keystone_doctor
   failed_when: not debug and keystone_doctor.rc != 0
   changed_when: false
-  run_once: yes
+  run_once: true
   when:
     - "_keystone_is_last_play_host"
   tags:

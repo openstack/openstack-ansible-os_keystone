@@ -16,7 +16,7 @@
 - name: Restart web server
   service:
     name: "{{ keystone_system_service_name }}"
-    enabled: yes
+    enabled: true
     state: restarted
     daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _restart
@@ -58,7 +58,7 @@
 - name: Start uWSGI
   service:
     name: "{{ item }}"
-    enabled: yes
+    enabled: true
     state: "started"
     daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _start
@@ -86,7 +86,7 @@
 - name: Restart Shibd
   service:
     name: "shibd"
-    enabled: yes
+    enabled: true
     state: "restarted"
     daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
   register: _restart

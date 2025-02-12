@@ -70,10 +70,10 @@ _keystone_cache_backend_map:
     - oslo_cache.etcd3gw
 
 _keystone_cache_backend_package: |-
-    {% set oslo = namespace(backend='dogpile') %}
-    {% for key, value in _keystone_cache_backend_map.items() %}
-    {%   if keystone_cache_backend in value %}
-    {%     set oslo.backend = key %}
-    {%-   endif %}
-    {%- endfor %}
-    oslo.cache[{{ oslo.backend }}]
+  {% set oslo = namespace(backend='dogpile') %}
+  {% for key, value in _keystone_cache_backend_map.items() %}
+  {%   if keystone_cache_backend in value %}
+  {%     set oslo.backend = key %}
+  {%-   endif %}
+  {%- endfor %}
+  oslo.cache[{{ oslo.backend }}]

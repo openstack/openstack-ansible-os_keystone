@@ -20,9 +20,9 @@
   systemd:
     name: "{{ keystone_sshd }}"
     state: started
-    enabled: yes
-    masked: no
-    daemon_reload: yes
+    enabled: true
+    masked: false
+    daemon_reload: true
   delegate_to: "{{ item }}"
   with_items: "{{ ansible_play_hosts }}"
   when: _keystone_is_first_play_host
@@ -75,7 +75,7 @@
   fetch:
     src: "{{ item.target_f }}"
     dest: "{{ item.tmp_f }}"
-    flat: yes
+    flat: true
   changed_when: false
   run_once: true
   with_items: "{{ keystone_core_files }}"

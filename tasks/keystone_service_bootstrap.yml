@@ -25,18 +25,18 @@
 
 - name: Bootstrap keystone admin and endpoint
   command: |
-     {{ keystone_bin }}/keystone-manage bootstrap \
-     --bootstrap-username {{ keystone_admin_user_name }} \
-     --bootstrap-password {{ keystone_auth_admin_password }} \
-     --bootstrap-project-name {{ keystone_admin_tenant_name }} \
-     --bootstrap-role-name {{ keystone_role_name }} \
-     --bootstrap-service-name {{ keystone_service_name }} \
-     --bootstrap-region-id {{ keystone_service_region }} \
-     --bootstrap-admin-url {{ keystone_service_adminuri }} \
-     --bootstrap-public-url {{ keystone_service_publicuri }} \
-     --bootstrap-internal-url {{ keystone_service_internaluri }}
+    {{ keystone_bin }}/keystone-manage bootstrap \
+    --bootstrap-username {{ keystone_admin_user_name }} \
+    --bootstrap-password {{ keystone_auth_admin_password }} \
+    --bootstrap-project-name {{ keystone_admin_tenant_name }} \
+    --bootstrap-role-name {{ keystone_role_name }} \
+    --bootstrap-service-name {{ keystone_service_name }} \
+    --bootstrap-region-id {{ keystone_service_region }} \
+    --bootstrap-admin-url {{ keystone_service_adminuri }} \
+    --bootstrap-public-url {{ keystone_service_publicuri }} \
+    --bootstrap-internal-url {{ keystone_service_internaluri }}
   no_log: true
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
   register: add_service

@@ -95,8 +95,8 @@
 ## We need to enable a module for httpd on RedHat/CentOS using LoadModule inside conf files
 - name: Enable/disable proxy_uwsgi_module
   lineinfile:
-    dest: '/etc/httpd/conf.modules.d/00-proxy.conf'
-    line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
+    dest: "/etc/httpd/conf.modules.d/00-proxy.conf"
+    line: "LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so"
     state: "present"
   when:
     - ansible_facts['pkg_mgr'] == 'dnf'
@@ -132,7 +132,7 @@
 - name: Ensure Apache ServerTokens
   lineinfile:
     dest: "{{ keystone_apache_security_conf }}"
-    regexp: '^ServerTokens'
+    regexp: "^ServerTokens"
     line: "ServerTokens {{ keystone_apache_servertokens }}"
   notify:
     - Restart web server
@@ -140,7 +140,7 @@
 - name: Ensure Apache ServerSignature
   lineinfile:
     dest: "{{ keystone_apache_security_conf }}"
-    regexp: '^ServerSignature'
+    regexp: "^ServerSignature"
     line: "ServerSignature {{ keystone_apache_serversignature }}"
   notify:
     - Restart web server
@@ -148,8 +148,8 @@
 - name: Remove Listen from Apache config
   lineinfile:
     dest: "{{ keystone_apache_conf }}"
-    regexp: '^(Listen.*)'
-    backrefs: yes
-    line: '#\1'
+    regexp: "^(Listen.*)"
+    backrefs: true
+    line: "#\\1"
   notify:
     - Restart web server

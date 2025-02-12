@@ -15,12 +15,12 @@
 
 - name: Check current state of Keystone DB
   command: "{{ keystone_bin }}/keystone-manage db_sync --check"
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   register: keystone_db_sync_check
   failed_when: "keystone_db_sync_check.rc == 1"
   changed_when: "keystone_db_sync_check.rc not in [2, 3, 4]"
-  run_once: yes
+  run_once: true
 
 - name: Set the db sync local facts
   ini_file:
@@ -47,7 +47,7 @@
 - name: Test if keystone service exists
   service: # noqa: args[module]
     name: "{{ item }}"
-  check_mode: yes
+  check_mode: true
   register: keystone_service_exists
   with_items: "{{ keystone_services.keys() | list }}"
 
@@ -69,20 +69,20 @@
 - name: Perform a Keystone DB sync expand
   command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
   changed_when: false
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
-  run_once: yes
+  run_once: true
   notify: flush cache
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
   changed_when: false
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   when:
     - "(keystone_all_software_updated | default('no')) | bool"
     - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"
-  run_once: yes
+  run_once: true
   notify: flush cache

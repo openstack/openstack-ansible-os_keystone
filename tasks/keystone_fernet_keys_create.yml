@@ -45,7 +45,7 @@
           --delete
           {{ keystone_system_user_name }}@{{ existing_fernet_hosts[0] }}:{{ keystone_fernet_tokens_key_repository }}/
           {{ keystone_fernet_tokens_key_repository }}/
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
   register: _fernet_keys_shared
@@ -60,7 +60,7 @@
     {{ keystone_bin }}/keystone-manage fernet_setup
                                        --keystone-user "{{ keystone_system_user_name }}"
                                        --keystone-group "{{ keystone_system_group_name }}"
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   when:
     - not _fernet_keys.stat.exists
@@ -71,6 +71,6 @@
     {{ keystone_bin }}/keystone-manage fernet_rotate
                                        --keystone-user "{{ keystone_system_user_name }}"
                                        --keystone-group "{{ keystone_system_group_name }}"
-  become: yes
+  become: true
   become_user: "{{ keystone_system_user_name }}"
   when: _fernet_keys.stat.exists

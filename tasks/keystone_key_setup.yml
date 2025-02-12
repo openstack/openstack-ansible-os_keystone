@@ -19,7 +19,7 @@
     path: "{{ keystone_system_user_home }}/.ssh"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
-    mode: '0755'
+    mode: "0755"
 
 - name: Create ssh keys for synchronising fernet keys
   include_role:
