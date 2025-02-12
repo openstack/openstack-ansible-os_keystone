@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Create keystone dir
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: "{{ item.owner | default(keystone_system_user_name) }}"
@@ -27,7 +27,7 @@
     - ansible_facts['pkg_mgr'] == 'dnf'
 
 - name: Create system links
-  file:
+  ansible.builtin.file:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     state: "link"
@@ -37,7 +37,7 @@
     - ansible_facts['pkg_mgr'] == 'dnf'
 
 - name: Add shibboleth repo
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: "shibboleth"
     description: "shibboleth Repo"
     baseurl: "{{ keystone_centos_shibboleth_mirror }}"
@@ -48,7 +48,7 @@
     - keystone_sp != {}
 
 - name: Install distro packages
-  package:
+  ansible.builtin.package:
     name: "{{ keystone_package_list }}"
     state: "{{ keystone_package_state }}"
     update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
@@ -62,13 +62,13 @@
     - Restart uWSGI
 
 - name: Install/remove apache mod packages for federated authentication
-  package:
+  ansible.builtin.package:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ keystone_sp_apache_mod_packages }}"
 
 - name: Install the python venv
-  import_role:
+  ansible.builtin.import_role:
     name: "python_venv_build"
   vars:
     venv_python_executable: "{{ keystone_venv_python_executable }}"
@@ -100,7 +100,7 @@
   when: keystone_install_method == 'distro'
   block:
     - name: Record the osa version deployed
-      ini_file:
+      community.general.ini_file:
         dest: "/etc/ansible/facts.d/openstack_ansible.fact"
         section: keystone
         option: venv_tag
@@ -111,7 +111,7 @@
     #                      for keystone user $HOME:
     #                      https://bugs.launchpad.net/cloud-archive/+bug/2060235
     - name: Ensure SSH keys has right permissions
-      file:
+      ansible.builtin.file:
         path: "{{ keystone_system_user_home }}/.ssh/id_rsa"
         mode: "0600"
       when:
@@ -119,7 +119,7 @@
         - ansible_facts['distribution'] | lower == 'ubuntu'
 
     - name: Initialise the upgrade facts
-      ini_file:
+      community.general.ini_file:
         dest: "/etc/ansible/facts.d/openstack_ansible.fact"
         section: keystone
         option: "{{ item.name }}"
@@ -140,7 +140,7 @@
             ('need_db_contract' not in ansible_local['openstack_ansible']['keystone'])
 
 - name: Create WSGI symlinks
-  file:
+  ansible.builtin.file:
     src: "{{ keystone_bin }}/keystone-wsgi-public"
     dest: "/var/www/cgi-bin/keystone/main"
     state: link

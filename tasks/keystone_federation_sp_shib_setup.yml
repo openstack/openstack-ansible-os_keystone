@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Drop Shibboleth Config
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ keystone_system_user_name }}"
@@ -27,7 +27,7 @@
     - Restart Shibd
 
 - name: Copy Shibboleth SP key-pair (if provided)
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.content }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode | default('0640') }}"
@@ -42,7 +42,7 @@
     - Restart Shibd
 
 - name: Generate the Shibboleth SP key-pair
-  command: "shib-keygen -h {{ external_lb_vip_address }} -y {{ keystone_sp.cert_duration_years }}"
+  ansible.builtin.command: "shib-keygen -h {{ external_lb_vip_address }} -y {{ keystone_sp.cert_duration_years }}"
   args:
     creates: "/etc/shibboleth/sp-cert.pem"
   when: _keystone_is_first_play_host
@@ -51,27 +51,27 @@
     - Restart Shibd
 
 - name: Store sp cert
-  slurp:
+  ansible.builtin.slurp:
     src: "/etc/shibboleth/sp-cert.pem"
   register: _keystone_sp_cert
   changed_when: false
   when: _keystone_is_first_play_host
 
 - name: Store sp key
-  slurp:
+  ansible.builtin.slurp:
     src: "/etc/shibboleth/sp-key.pem"
   register: _keystone_sp_key
   changed_when: false
   when: _keystone_is_first_play_host
 
 - name: Register a fact for the cert and key
-  set_fact:
+  ansible.builtin.set_fact:
     keystone_sp_cert_fact: "{{ _keystone_sp_cert.content }}"
     keystone_sp_key_fact: "{{ _keystone_sp_key.content }}"
   when: _keystone_is_first_play_host
 
 - name: Distribute sp key
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/shibboleth/sp-key.pem"
     content: "{{ hostvars[groups['keystone_all'][0]]['keystone_sp_key_fact'] | b64decode }}"
     owner: "{{ keystone_system_user_name }}"
@@ -83,7 +83,7 @@
     - Restart Shibd
 
 - name: Distribute sp cert
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/shibboleth/sp-cert.pem"
     content: "{{ hostvars[groups['keystone_all'][0]]['keystone_sp_cert_fact'] | b64decode }}"
     owner: "{{ keystone_system_user_name }}"
@@ -95,7 +95,7 @@
     - Restart Shibd
 
 - name: Set appropriate file ownership on the Shibboleth SP key-pair
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     owner: "_shibd"
     group: "_shibd"

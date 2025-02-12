@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Gather variables for each operating system
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       files:
@@ -29,14 +29,14 @@
     - always
 
 - name: Create system groups
-  group:
+  ansible.builtin.group:
     name: "{{ item }}"
     state: "present"
     system: "yes"
   with_items: "{{ [keystone_system_group_name] + keystone_system_additional_groups }}"
 
 - name: Create the keystone system user
-  user:
+  ansible.builtin.user:
     name: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     groups: "{{ keystone_system_additional_groups | join(',') }}"
@@ -47,7 +47,7 @@
     home: "{{ keystone_system_user_home }}"
 
 - name: Create keystone dir
-  file:
+  ansible.builtin.file:
     path: "{{ item.path | default(omit) }}"
     src: "{{ item.src | default(omit) }}"
     dest: "{{ item.dest | default(omit) }}"
@@ -80,7 +80,7 @@
       group: root
 
 - name: Install distro packages
-  package:
+  ansible.builtin.package:
     name: "{{ keystone_distro_packages }}"
     state: "{{ keystone_package_state }}"
     update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
@@ -93,7 +93,7 @@
     - Restart ssh
 
 - name: Adjust sshd configuration in container
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "/etc/ssh/sshd_config"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -103,6 +103,6 @@
     - Restart ssh
 
 - name: Importing keystone_key_setup tasks
-  import_tasks: keystone_key_setup.yml
+  ansible.builtin.import_tasks: keystone_key_setup.yml
   tags:
     - keystone-install

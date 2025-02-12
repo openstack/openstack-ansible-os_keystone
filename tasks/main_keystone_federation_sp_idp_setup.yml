@@ -1,6 +1,6 @@
 ---
 - name: Including keystone_federation_sp_idp_setup tasks
-  include_tasks: keystone_federation_sp_idp_setup.yml
+  ansible.builtin.include_tasks: keystone_federation_sp_idp_setup.yml
   with_items: "{{ keystone_sp.trusted_idp_list }}"
   loop_control:
     loop_var: trusted_idp

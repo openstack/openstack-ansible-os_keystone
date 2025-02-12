@@ -33,7 +33,7 @@
     ansible_python_interpreter: "{{ keystone_service_setup_host_python_interpreter }}"
 
 - name: Create Keystone LDAP domain configs
-  template:
+  ansible.builtin.template:
     src: keystone.domain.conf.j2
     dest: "{{ keystone_ldap_domain_config_dir }}/keystone.{{ item.key }}.conf"
     owner: "root"
@@ -49,7 +49,7 @@
 # keystone.Default.conf and this will cause errors when adding LDAP-backed
 # domains.
 - name: Remove Keystone Default domain configuration file if not needed
-  file:
+  ansible.builtin.file:
     path: "{{ keystone_ldap_domain_config_dir }}/keystone.Default.conf"
     state: absent
   when: keystone_ldap.Default is not defined

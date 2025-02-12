@@ -14,12 +14,12 @@
 # limitations under the License.
 
 - name: Including keystone_fernet_keys_create tasks
-  include_tasks: keystone_fernet_keys_create.yml
+  ansible.builtin.include_tasks: keystone_fernet_keys_create.yml
   when: _keystone_is_first_play_host
 
 - name: Including keystone_fernet_keys_distribute tasks
-  include_tasks: keystone_fernet_keys_distribute.yml
+  ansible.builtin.include_tasks: keystone_fernet_keys_distribute.yml
   when: _keystone_is_first_play_host
 
 - name: Including keystone_fernet_keys_autorotate tasks
-  include_tasks: keystone_fernet_keys_autorotate.yml
+  ansible.builtin.include_tasks: keystone_fernet_keys_autorotate.yml

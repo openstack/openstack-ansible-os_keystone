@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Ensure .ssh directory is present
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ keystone_system_user_home }}/.ssh"
     owner: "{{ keystone_system_user_name }}"
@@ -22,7 +22,7 @@
     mode: "0755"
 
 - name: Create ssh keys for synchronising fernet keys
-  include_role:
+  ansible.builtin.include_role:
     name: openstack.osa.ssh_keypairs
   args:
     apply:

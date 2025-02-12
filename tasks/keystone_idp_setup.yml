@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Generate IdP metadata
-  shell: |
+  ansible.builtin.shell: |
     {{ keystone_bin }}/keystone-manage saml_idp_metadata > {{ keystone_idp.idp_metadata_path }}
   become: true
   become_user: "{{ keystone_system_user_name }}"

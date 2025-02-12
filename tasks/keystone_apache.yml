@@ -14,19 +14,19 @@
 # limitations under the License.
 
 - name: Create apache nogroup group
-  group:
+  ansible.builtin.group:
     name: "nogroup"
     system: "yes"
 
 - name: Create apache nogroup user
-  user:
+  ansible.builtin.user:
     name: "nogroup"
     group: "nogroup"
     system: "yes"
     shell: "/bin/false"
 
 - name: Ensure apache log folder exists
-  file:
+  ansible.builtin.file:
     dest: "{{ keystone_apache_default_log_folder }}"
     state: directory
     owner: "{{ keystone_apache_default_log_owner }}"
@@ -34,7 +34,7 @@
     mode: "0755"
 
 - name: Ensure apache2 MPM for Debian/Ubuntu
-  apache2_module:
+  community.general.apache2_module:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     warn_mpm_absent: false
@@ -44,7 +44,7 @@
   notify: Restart web server
 
 - name: Ensure apache2 MPM for EL
-  copy:
+  ansible.builtin.copy:
     content: |
       LoadModule mpm_{{ keystone_httpd_mpm_backend }}_module modules/mod_mpm_{{ keystone_httpd_mpm_backend }}.so
 
@@ -57,7 +57,7 @@
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian
 - name: Enable apache2 modules
-  apache2_module:
+  community.general.apache2_module:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ keystone_apache_modules }}"
@@ -68,7 +68,7 @@
     - Restart web server
 
 - name: Place apache2 config files
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "root"
@@ -81,7 +81,7 @@
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian
 - name: Disable apache2 modules
-  apache2_module:
+  community.general.apache2_module:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ keystone_apache_modules }}"
@@ -94,7 +94,7 @@
 ## NOTE(andymccr):
 ## We need to enable a module for httpd on RedHat/CentOS using LoadModule inside conf files
 - name: Enable/disable proxy_uwsgi_module
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "/etc/httpd/conf.modules.d/00-proxy.conf"
     line: "LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so"
     state: "present"
@@ -104,7 +104,7 @@
     - Restart web server
 
 - name: Disable default apache site
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: "absent"
   with_items: "{{ keystone_apache_default_sites }}"
@@ -112,7 +112,7 @@
     - Restart web server
 
 - name: Enabled keystone vhost
-  file:
+  ansible.builtin.file:
     src: "{{ keystone_apache_site_available }}"
     dest: "{{ keystone_apache_site_enabled }}"
     state: "link"
@@ -123,14 +123,14 @@
     - Restart web server
 
 - name: Ensure Apache ServerName
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ keystone_apache_conf }}"
     line: "ServerName {{ ansible_facts['hostname'] }}"
   notify:
     - Restart web server
 
 - name: Ensure Apache ServerTokens
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ keystone_apache_security_conf }}"
     regexp: "^ServerTokens"
     line: "ServerTokens {{ keystone_apache_servertokens }}"
@@ -138,7 +138,7 @@
     - Restart web server
 
 - name: Ensure Apache ServerSignature
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ keystone_apache_security_conf }}"
     regexp: "^ServerSignature"
     line: "ServerSignature {{ keystone_apache_serversignature }}"
@@ -146,7 +146,7 @@
     - Restart web server
 
 - name: Remove Listen from Apache config
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ keystone_apache_conf }}"
     regexp: "^(Listen.*)"
     backrefs: true

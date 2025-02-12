@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Fail if our required secrets are not present
-  fail:
+  ansible.builtin.fail:
     msg: "Please set the {{ item }} variable prior to applying this role."
   when: (item is undefined) or (item is none)
   with_items: "{{ keystone_required_secrets }}"
@@ -22,7 +22,7 @@
     - always
 
 - name: Fail if service was deployed using a different installation method
-  fail:
+  ansible.builtin.fail:
     msg: "Switching installation methods for OpenStack services is not supported"
   when:
     - ansible_local is defined
@@ -32,7 +32,7 @@
     - ansible_local.openstack_ansible.keystone.install_method != keystone_install_method
 
 - name: Gather variables for each operating system
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       files:
@@ -47,12 +47,12 @@
     - always
 
 - name: Gather variables for installation method
-  include_vars: "{{ keystone_install_method }}_install.yml"
+  ansible.builtin.include_vars: "{{ keystone_install_method }}_install.yml"
   tags:
     - always
 
 - name: Fact for apache module shibboleth to be installed
-  set_fact:
+  ansible.builtin.set_fact:
     keystone_sp_apache_mod_shib: >-
       {{
         (keystone_sp != {} and (keystone_sp.apache_mod is undefined or (
@@ -63,7 +63,7 @@
     - always
 
 - name: Fact for apache module mod_auth_openidc to be installed
-  set_fact:
+  ansible.builtin.set_fact:
     keystone_sp_apache_mod_auth_openidc:
       "{{ (keystone_sp != {} and
       keystone_sp.apache_mod is defined and keystone_sp.apache_mod == 'mod_auth_openidc')
@@ -72,7 +72,7 @@
     - always
 
 - name: Including osa.db_setup role
-  include_role:
+  ansible.builtin.include_role:
     name: openstack.osa.db_setup
     apply:
       tags:
@@ -94,7 +94,7 @@
     - always
 
 - name: Including osa.mq_setup role
-  include_role:
+  ansible.builtin.include_role:
     name: openstack.osa.mq_setup
     apply:
       tags:
@@ -121,25 +121,25 @@
     - always
 
 - name: Importing keystone_install tasks
-  import_tasks: keystone_install.yml
+  ansible.builtin.import_tasks: keystone_install.yml
   tags:
     - keystone-install
 
 - name: Refresh local facts
-  setup:
+  ansible.builtin.setup:
     filter: ansible_local
     gather_subset: "!all"
   tags:
     - keystone-config
 
 - name: Importing keystone_post_install tasks
-  import_tasks: keystone_post_install.yml
+  ansible.builtin.import_tasks: keystone_post_install.yml
   tags:
     - keystone-config
     - post-install
 
 - name: Importing keystone_fernet tasks
-  import_tasks: keystone_fernet.yml
+  ansible.builtin.import_tasks: keystone_fernet.yml
   when:
     - "'fernet' in keystone_token_provider"
     - keystone_service_setup | bool
@@ -147,20 +147,20 @@
     - keystone-config
 
 - name: Importing keystone_db_sync tasks
-  import_tasks: keystone_db_sync.yml
+  ansible.builtin.import_tasks: keystone_db_sync.yml
   when:
     - "keystone_database_enabled | bool"
   tags:
     - keystone-config
 
 - name: Importing keystone_credential tasks
-  import_tasks: keystone_credential.yml
+  ansible.builtin.import_tasks: keystone_credential.yml
   when: keystone_service_setup | bool
   tags:
     - keystone-config
 
 - name: Importing keystone_federation_sp_shib_setup tasks
-  import_tasks: keystone_federation_sp_shib_setup.yml
+  ansible.builtin.import_tasks: keystone_federation_sp_shib_setup.yml
   when:
     - keystone_sp_apache_mod_shib
     - not (keystone_use_uwsgi | bool)
@@ -168,7 +168,7 @@
     - keystone-config
 
 - name: Create and install SSL certificates
-  include_role:
+  ansible.builtin.include_role:
     name: pki
     tasks_from: main_certs.yml
   vars:
@@ -187,14 +187,14 @@
     - keystone-config
 
 - name: Importing keystone_apache tasks
-  import_tasks: "keystone_apache.yml"
+  ansible.builtin.import_tasks: "keystone_apache.yml"
   when:
     - not (keystone_use_uwsgi | bool)
   tags:
     - keystone-config
 
 - name: Import uwsgi role
-  import_role:
+  ansible.builtin.import_role:
     name: uwsgi
   vars:
     uwsgi_services: "{{ uwsgi_keystone_services }}"
@@ -204,10 +204,10 @@
     - uwsgi
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Including keystone_service_bootstrap tasks
-  include_tasks: keystone_service_bootstrap.yml
+  ansible.builtin.include_tasks: keystone_service_bootstrap.yml
   args:
     apply:
       tags:
@@ -224,7 +224,7 @@
 # the endpoints which were bootstrapped in keystone_service_bootstrap.
 - name: Wait for services to be up
   delegate_to: "{{ keystone_service_setup_host }}"
-  uri:
+  ansible.builtin.uri:
     url: "{{ item.url }}"
     validate_certs: "{{ item.validate_certs }}"
     method: "HEAD"
@@ -242,7 +242,7 @@
   delay: 5
 
 - name: Including osa.service_setup role
-  include_role:
+  ansible.builtin.include_role:
     name: openstack.osa.service_setup
     apply:
       tags:
@@ -277,7 +277,7 @@
     - always
 
 - name: Including keystone_ldap_setup tasks
-  import_tasks: keystone_ldap_setup.yml
+  ansible.builtin.import_tasks: keystone_ldap_setup.yml
   when:
     - keystone_service_setup | bool
     - keystone_ldap != {}
@@ -285,10 +285,10 @@
     - keystone-config
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Including keystone_idp_setup tasks
-  include_tasks: keystone_idp_setup.yml
+  ansible.builtin.include_tasks: keystone_idp_setup.yml
   args:
     apply:
       tags:
@@ -300,7 +300,7 @@
     - always
 
 - name: Diagnose common problems with keystone deployments
-  command: "{{ keystone_bin }}/keystone-manage doctor"
+  ansible.builtin.command: "{{ keystone_bin }}/keystone-manage doctor"
   become: true
   become_user: "{{ keystone_system_user_name }}"
   register: keystone_doctor

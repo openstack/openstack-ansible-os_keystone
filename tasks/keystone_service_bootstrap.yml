@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Wait for service to be up
-  uri:
+  ansible.builtin.uri:
     url: "{{ keystone_service_internaluri }}"
     method: "HEAD"
     status_code: 300
@@ -24,7 +24,7 @@
   delay: 5
 
 - name: Bootstrap keystone admin and endpoint
-  command: |
+  ansible.builtin.command: |
     {{ keystone_bin }}/keystone-manage bootstrap \
     --bootstrap-username {{ keystone_admin_user_name }} \
     --bootstrap-password {{ keystone_auth_admin_password }} \

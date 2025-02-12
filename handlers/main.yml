@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Restart web server
-  service:
+  ansible.builtin.service:
     name: "{{ keystone_system_service_name }}"
     enabled: true
     state: restarted
@@ -27,7 +27,7 @@
     - "venv changed"
 
 - name: Wait for web server to complete starting
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ keystone_web_server_bind_address }}"
     port: "{{ item }}"
     timeout: 25
@@ -42,7 +42,7 @@
     - "Restart web server"
 
 - name: Stop uWSGI
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     state: "stopped"
     daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
@@ -56,7 +56,7 @@
     - "Restart uWSGI"
 
 - name: Start uWSGI
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     enabled: true
     state: "started"
@@ -71,7 +71,7 @@
     - "Restart uWSGI"
 
 - name: Wait for uWSGI socket to be ready
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ (keystone_use_uwsgi | bool) | ternary(keystone_uwsgi_bind_address, '127.0.0.1') }}"
     port: "{{ (keystone_use_uwsgi | bool) | ternary(keystone_service_port, keystone_uwsgi_ports['keystone-wsgi-public']['socket']) }}"
     timeout: 25
@@ -84,7 +84,7 @@
     - "Restart uWSGI"
 
 - name: Restart Shibd
-  service:
+  ansible.builtin.service:
     name: "shibd"
     enabled: true
     state: "restarted"
@@ -95,7 +95,7 @@
   delay: 2
 
 - name: Restart ssh
-  service:
+  ansible.builtin.service:
     name: "{{ keystone_sshd }}"
     state: "restarted"
 
@@ -104,7 +104,7 @@
     nc_command:
       debian: nc -q 1 $(awk '/^\-l/ {print $2}' "/etc/memcached.conf" | awk -F, '{print $1}') $(awk '/^\-p/ {print $2}' "/etc/memcached.conf")
       redhat: nc $(awk -F '-l' '/^OPTIONS/ {print $2}' "/etc/sysconfig/memcached" | awk -F ',' '{gsub(/"/, "", $1); print $1}' | awk -F '-' '{print $1}') 11211
-  shell: "echo 'flush_all' | {{ nc_command.get(ansible_facts['os_family'] | lower) }}"
+  ansible.builtin.shell: "echo 'flush_all' | {{ nc_command.get(ansible_facts['os_family'] | lower) }}"
   changed_when: false
   delegate_to: "{{ item }}"
   with_items: "{{ groups.memcached_all }}"

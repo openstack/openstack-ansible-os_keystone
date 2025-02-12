@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Check current state of Keystone DB
-  command: "{{ keystone_bin }}/keystone-manage db_sync --check"
+  ansible.builtin.command: "{{ keystone_bin }}/keystone-manage db_sync --check"
   become: true
   become_user: "{{ keystone_system_user_name }}"
   register: keystone_db_sync_check
@@ -23,7 +23,7 @@
   run_once: true
 
 - name: Set the db sync local facts
-  ini_file:
+  community.general.ini_file:
     dest: "/etc/ansible/facts.d/openstack_ansible.fact"
     section: keystone
     option: "{{ item.name }}"
@@ -36,7 +36,7 @@
       state: "{{ (keystone_db_sync_check.rc | int in [2, 3, 4]) | bool }}"
 
 - name: Refresh local facts
-  setup:
+  ansible.builtin.setup:
     filter: ansible_local
     gather_subset: "!all"
   tags:
@@ -45,14 +45,14 @@
 # When keystone is initially built, the service does not yet exist on the
 # host this task is executed on. Detect the presence of the services.
 - name: Test if keystone service exists
-  service: # noqa: args[module]
+  ansible.builtin.service: # noqa: args[module]
     name: "{{ item }}"
   check_mode: true
   register: keystone_service_exists
   with_items: "{{ keystone_services.keys() | list }}"
 
 - name: Ensure keystone service is stopped
-  service:
+  ansible.builtin.service:
     name: "{{ item.name }}"
     state: stopped
   register: _stop
@@ -67,7 +67,7 @@
     - Restart uWSGI
 
 - name: Perform a Keystone DB sync expand
-  command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
+  ansible.builtin.command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
   changed_when: false
   become: true
   become_user: "{{ keystone_system_user_name }}"
@@ -77,7 +77,7 @@
   notify: flush cache
 
 - name: Perform a Keystone DB sync contract
-  command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
+  ansible.builtin.command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
   changed_when: false
   become: true
   become_user: "{{ keystone_system_user_name }}"
