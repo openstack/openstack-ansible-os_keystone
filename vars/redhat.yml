@@ -35,11 +35,6 @@ keystone_service_distro_packages:
   - openstack-keystone
   - python3-systemd
 
-keystone_apache_distro_packages:
-  - httpd
-  - httpd-tools
-  - mod_ssl
-
 keystone_idp_distro_packages:
   - xmlsec1
 
@@ -55,23 +50,8 @@ keystone_sp_apache_mod_packages:
 keystone_developer_mode_distro_packages:
   - gcc
 
-keystone_apache_default_sites:
-  - "/etc/httpd/conf.d/userdir.conf"
-  - "/etc/httpd/conf.d/welcome.conf"
-  - "/etc/httpd/conf.d/ssl.conf"
-
-keystone_apache_conf: "/etc/httpd/conf/httpd.conf"
-keystone_apache_default_log_folder: "/var/log/httpd"
-keystone_apache_default_log_owner: "root"
-keystone_apache_default_log_grp: "root"
-keystone_apache_security_conf: "{{ keystone_apache_conf }}"
-
-keystone_apache_configs:
-  - { src: "keystone-ports.conf.j2", dest: "/etc/httpd/conf.d/ports.conf" }
-  - { src: "keystone-httpd.conf.j2", dest: "/etc/httpd/conf.d/keystone-httpd.conf" }
-  - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/httpd/conf.modules.d/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
-
-keystone_system_service_name: "{{ (keystone_use_uwsgi | bool) | ternary('keystone-wsgi-public', 'httpd') }}"
+keystone_deprecated_apache_configs:
+  - /etc/httpd/conf.d/keystone-httpd.conf
 
 keystone_uwsgi_bin: "/usr/sbin"
 

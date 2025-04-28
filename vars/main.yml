@@ -77,3 +77,116 @@ _keystone_cache_backend_package: |-
   {%-   endif %}
   {%- endfor %}
   oslo.cache[{{ oslo.backend }}]
+
+_keystone_httpd_vhost_ssl: |-
+  {% set ssl_options = {} %}
+  {% if (keystone_user_ssl_cert is defined and keystone_user_ssl_cert) and (keystone_user_ssl_key is defined and keystone_user_ssl_key) %}
+  {%   set _ = ssl_options.update({'cert': keystone_user_ssl_cert, 'key': keystone_user_ssl_key}) %}
+  {%   if keystone_user_ssl_ca_cert is defined and keystone_user_ssl_ca_cert %}
+  {%     set _ = ssl_options.update({'ca': keystone_user_ssl_ca_cert}) %}
+  {%   endif %}
+  {% else %}
+  {%   set _ = ssl_options.update({'san': keystone_pki_san}) %}
+  {% endif %}
+  {{ ssl_options }}
+
+_keystone_httpd_base_options:
+  - Options +FollowSymLinks
+
+_keystone_httpd_shib_options:
+  - "ShibURLScheme {{ keystone_service_publicuri_proto }}"
+  - "ProxyPass /Shibboleth.sso !"
+  - "<LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/saml2/auth>"
+  - "   ShibRequestSetting requireSession 1"
+  - "   AuthType shibboleth"
+  - "   ShibExportAssertion Off"
+  - "   Require valid-user"
+  - "</LocationMatch>"
+
+_keystone_httpd_openidc_base_options:
+  - "OIDCClaimPrefix \"{{ keystone_sp.trusted_idp_list.0.oidc_claim_prefix | default('OIDC-') }}\""
+  - "OIDCResponseType \"{{ keystone_sp.trusted_idp_list.0.oidc_resp_type | default('id_token') }}\""
+  - "OIDCScope \"{{ keystone_sp.trusted_idp_list.0.oidc_scope | default('openid email profile') }}\""
+  - "OIDCProviderMetadataURL {{ keystone_sp.trusted_idp_list.0.oidc_provider_metadata_url }}"
+  - "OIDCClientID {{ keystone_sp.trusted_idp_list.0.oidc_client_id }}"
+  - "OIDCClientSecret {{ keystone_sp.trusted_idp_list.0.oidc_client_secret }}"
+  - "OIDCCryptoPassphrase {{ keystone_sp.trusted_idp_list.0.oidc_crypto_passphrase }}"
+  - "OIDCRedirectURI {{ keystone_service_publicuri }}{{ keystone_sp.trusted_idp_list.0.oidc_redirect_path | default('/oidc_redirect') }}"
+
+_keystone_httpd_openidc_options: |-
+  {% set openidc_options = _keystone_httpd_openidc_base_options %}
+  {% if _keystone_sp_apache_mod_auth_openidc_gte_2_4_11 is defined and _keystone_sp_apache_mod_auth_openidc_gte_2_4_11 %}
+  {%   set _ = openidc_options.append('OIDCXForwardedHeaders ' ~ keystone_secure_proxy_ssl_header) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_auth_verify_jwks_uri is defined %}
+  {%   set _ = openidc_options.append('OIDCOAuthVerifyJwksUri ' ~ keystone_sp.trusted_idp_list.0.oidc_auth_verify_jwks_uri) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_outgoing_proxy is defined %}
+  {%   set _ = openidc_options.append('OIDCOutgoingProxy ' ~ keystone_sp.trusted_idp_list.0.oidc_outgoing_proxy) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_oauth_introspection_endpoint is defined %}
+  {%   set _ = openidc_options.append('OIDCOAuthIntrospectionEndpoint ' ~ keystone_sp.trusted_idp_list.0.oidc_oauth_introspection_endpoint) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_oauth_client_id is defined %}
+  {%   set _ = openidc_options.append('OIDCOAuthClientID ' ~ keystone_sp.trusted_idp_list.0.oidc_oauth_client_id) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_oauth_client_secret is defined %}
+  {%   set _ = openidc_options.append('OIDCOAuthClientSecret ' ~ keystone_sp.trusted_idp_list.0.oidc_oauth_client_secret) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_pkce_method is defined %}
+  {%   set _ = openidc_options.append('OIDCPKCEMethod ' ~ keystone_sp.trusted_idp_list.0.oidc_pkce_method) %}
+  {% endif %}
+  {% if keystone_cache_servers | length > 0 -%}
+  {%   set _ = openidc_options.append('OIDCCacheType memcache') %}
+  {%   set _ = openidc_options.append('OIDCMemCacheServers "' ~ keystone_cache_servers | join(' ') ~ '"') %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_auth_request_params is defined %}
+  {%   set _ = openidc_options.append('OIDCAuthRequestParams ' ~ keystone_sp.trusted_idp_list.0.oidc_auth_request_params) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_state_max_number_of_cookies is defined -%}
+  {%   set _ = openidc_options.append('OIDCStateMaxNumberOfCookies ' ~ keystone_sp.trusted_idp_list.0.oidc_state_max_number_of_cookies) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_default_url is defined %}
+  {%   set _ = openidc_options.append('OIDCDefaultURL ' ~ keystone_sp.trusted_idp_list.0.oidc_default_url) %}
+  {% endif %}
+  {% if keystone_sp.trusted_idp_list.0.oidc_claim_delimiter is defined %}
+  {%   set _ = openidc_options.append('OIDCClaimDelimiter ' ~ keystone_sp.trusted_idp_list.0.oidc_claim_delimiter) %}
+  {% endif %}
+  {{ openidc_options }}
+
+_keystone_httpd_openidc_location_options:
+  - Require valid-user
+  - AuthType openid-connect
+
+_keystone_httpd_openidc_locations:
+  - path: "{{ keystone_sp.trusted_idp_list.0.oidc_redirect_path | default('/oidc_redirect') }}"
+    options: "{{ _keystone_httpd_openidc_location_options }}"
+  - path: "/v3/OS-FEDERATION/identity_providers/{{ keystone_sp.trusted_idp_list.0.name }}/protocols/openid/auth"
+    options:
+      - Require valid-user
+      - AuthType auth-openidc
+  - path: /v3/auth/OS-FEDERATION/websso/openid
+    options: "{{ _keystone_httpd_openidc_location_options }}"
+  - path: /v3/auth/OS-FEDERATION/identity_providers/{{ keystone_sp.trusted_idp_list.0.name }}/protocols/openid/websso
+    options: "{{ _keystone_httpd_openidc_location_options }}"
+
+_keystone_httpd_shib_locations:
+  - path: /CShibboleth.sso
+    options:
+      - SetHandler shib
+  - path: /v3/auth/OS-FEDERATION/websso/saml2\
+    options:
+      - AuthType shibboleth
+      - ShibRequestSetting requireSession 1
+      - ShibRequestSetting exportAssertion 1
+      - ShibRequireSession On
+      - ShibExportAssertion On
+      - Require valid-user
+
+_keystone_httpd_sp_directories:
+  - path: /var/www/cgi-bin/keystone
+    options:
+      - Options Indexes FollowSymLinks MultiViews
+      - AllowOverride All
+      - Order allow,deny
+      - allow from all

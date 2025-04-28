@@ -224,19 +224,6 @@ keystone_web_server_bind_address: "{{ openstack_service_bind_address | default('
 ## Apache setup
 keystone_apache_log_level: info
 keystone_apache_custom_log_format: combined
-keystone_apache_servertokens: "Prod"
-keystone_apache_serversignature: "Off"
-
-## Apache MPM tunables
-keystone_httpd_mpm_backend: "{{ openstack_apache_mpm_backend | default('event') }}"
-keystone_httpd_mpm_server_limit: "{{ keystone_wsgi_processes }}"
-keystone_httpd_mpm_start_servers: 2
-keystone_httpd_mpm_min_spare_threads: 25
-keystone_httpd_mpm_max_spare_threads: 75
-keystone_httpd_mpm_thread_limit: 64
-keystone_httpd_mpm_thread_child: 25
-keystone_httpd_mpm_max_requests: "{{ keystone_httpd_mpm_server_limit | int * keystone_httpd_mpm_thread_child | int }}"
-keystone_httpd_mpm_max_conn_child: 0
 
 ## uWSGI setup
 keystone_wsgi_threads: 1
@@ -276,6 +263,8 @@ keystone_pki_regen_cert: ""
 
 # By default, CA creation is controlled using the CA 'condition' field
 keystone_pki_create_ca: true
+# SAN which will be used by HTTP role to generate certificatess
+keystone_pki_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ keystone_node_address) }}"
 # An optional private certificate authority for when Keystone is an IDP
 keystone_idp_authority_name: "KeystoneIDPAuthority"
 keystone_pki_authorities:
@@ -293,46 +282,11 @@ keystone_pki_authorities:
     not_after: "+3650d"
     condition: "{{ (keystone_idp['certfile'] is defined) and _keystone_is_first_play_host }}"
 
-# By default, certificate creation is controlled using the certificates 'condition' field
-keystone_pki_create_certificates: true
-# Server certificate for Apache
-keystone_pki_certificates:
-  - name: "keystone_{{ ansible_facts['hostname'] }}"
-    provider: ownca
-    cn: "{{ ansible_facts['hostname'] }}"
-    san: "{{ 'DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ keystone_node_address }}"
-    signed_by: "{{ keystone_pki_intermediate_cert_name }}"
-    condition: "{{ keystone_backend_ssl }}"
-
 # Set to the value of keystone_idp_authority_name to regenerate the IDP CA
 keystone_pki_regen_ca: ""
 
-# keystone destination files for Apache SSL certificates
-keystone_ssl_cert: /etc/ssl/certs/keystone.pem
-keystone_ssl_key: /etc/ssl/private/keystone.key
-keystone_ssl_ca_cert: /etc/ssl/certs/keystone-ca.pem
-
 # Installation details for SSL certificates
 keystone_pki_install_certificates:
-  # Apache certificates
-  - src: "{{ keystone_user_ssl_cert | default(keystone_pki_certs_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
-    dest: "{{ keystone_ssl_cert }}"
-    owner: "{{ keystone_system_user_name }}"
-    group: "{{ keystone_system_group_name }}"
-    mode: "0644"
-    condition: "{{ keystone_backend_ssl }}"
-  - src: "{{ keystone_user_ssl_key | default(keystone_pki_keys_path ~ 'keystone_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
-    dest: "{{ keystone_ssl_key }}"
-    owner: "{{ keystone_system_user_name }}"
-    group: "{{ keystone_system_group_name }}"
-    mode: "0600"
-    condition: "{{ keystone_backend_ssl }}"
-  - src: "{{ keystone_user_ssl_ca_cert | default(keystone_pki_intermediate_cert_path) }}"
-    dest: "{{ keystone_ssl_ca_cert }}"
-    owner: "{{ keystone_system_user_name }}"
-    group: "{{ keystone_system_group_name }}"
-    mode: "0644"
-    condition: "{{ keystone_user_ssl_ca_cert is defined }}"
   # IDP certificates
   - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/certs/' ~ keystone_idp_authority_name ~ '.crt' }}"
     dest: "{{ keystone_idp['certfile'] | default('') }}"
