@@ -1,14 +1,5 @@
-========================
-Team and repository tags
-========================
-
-.. image:: https://governance.openstack.org/tc/badges/openstack-ansible-os_keystone.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
-
-.. Change things from this point on
-
 ==========================
-OpenStack-Ansible keystone
+OpenStack-Ansible Keystone
 ==========================
 
 Ansible role that installs and configures OpenStack Keystone. Keystone is
@@ -28,4 +19,3 @@ The project home is at:
 
 The project bug tracker is located at:
 `< https://bugs.launchpad.net/openstack-ansible>`_
-
