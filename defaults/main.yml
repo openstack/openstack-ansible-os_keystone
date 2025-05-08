@@ -260,6 +260,7 @@ keystone_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert
 keystone_pki_intermediate_cert_path: >-
   {{ keystone_pki_dir ~ '/roots/' ~ keystone_pki_intermediate_cert_name ~ '/certs/' ~ keystone_pki_intermediate_cert_name ~ '.crt' }}
 keystone_pki_regen_cert: ""
+keystone_pki_backend: "{{ openstack_pki_backend | default('standalone') }}"
 
 # By default, CA creation is controlled using the CA 'condition' field
 keystone_pki_create_ca: true
@@ -274,13 +275,16 @@ keystone_pki_authorities:
     organization_name: "Example Corporation"
     organizational_unit_name: "IT Security"
     cn: "Keystone IDP CA"
-    provider: selfsigned
-    basic_constraints: "CA:TRUE"
     key_usage:
       - digitalSignature
       - keyCertSign
-    not_after: "+3650d"
+    ttl: "3650d"
     condition: "{{ (keystone_idp['certfile'] is defined) and _keystone_is_first_play_host }}"
+    # NOTE(damiandabrowski): Only standalone backend is supported for IDP authorities at the moment
+    backend: standalone
+    # standalone backend only
+    provider: selfsigned
+    basic_constraints: "CA:TRUE"
 
 # Set to the value of keystone_idp_authority_name to regenerate the IDP CA
 keystone_pki_regen_ca: ""
@@ -288,18 +292,20 @@ keystone_pki_regen_ca: ""
 # Installation details for SSL certificates
 keystone_pki_install_certificates:
   # IDP certificates
-  - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/certs/' ~ keystone_idp_authority_name ~ '.crt' }}"
-    dest: "{{ keystone_idp['certfile'] | default('') }}"
-    owner: "{{ keystone_system_user_name }}"
-    group: "keystone_system_group_name"
-    mode: "0640"
-    condition: "{{ keystone_idp['certfile'] is defined | bool }}"
-  - src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/private/' ~ keystone_idp_authority_name ~ '.key.pem' }}"
-    dest: "{{ keystone_idp['keyfile'] | default('') }}"
+  - dest: "{{ keystone_idp['certfile'] | default('') }}"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
-    mode: "0640"
+    condition: "{{ keystone_idp['certfile'] is defined | bool }}"
+    backend: standalone
+    # standalone backend only
+    src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/certs/' ~ keystone_idp_authority_name ~ '.crt' }}"
+  - dest: "{{ keystone_idp['keyfile'] | default('') }}"
+    owner: "{{ keystone_system_user_name }}"
+    group: "{{ keystone_system_group_name }}"
     condition: "{{ keystone_idp['keyfile'] is defined | bool }}"
+    backend: standalone
+    # standalone backend only
+    src: "{{ keystone_pki_dir ~ '/roots/' ~ keystone_idp_authority_name ~ '/private/' ~ keystone_idp_authority_name ~ '.key.pem' }}"
 
 keystone_ssl_protocol: "{{ ssl_protocol | default('ALL -SSLv2 -SSLv3 -TLSv1 -TLSv1.1') }}"
 # TLS v1.2 and below
@@ -310,9 +316,9 @@ keystone_ssl_cipher_suite_tls13: >-
   {{ ssl_cipher_suite_tls13 | default('TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256') }}
 
 # Set these variables to deploy custom certificates
-# keystone_user_ssl_cert: <path to cert on ansible deployment host>
-# keystone_user_ssl_key: <path to cert on ansible deployment host>
-# keystone_user_ssl_ca_cert: <path to cert on ansible deployment host>
+keystone_user_ssl_cert: ""
+keystone_user_ssl_key: ""
+keystone_user_ssl_ca_cert: ""
 
 # External SSL forwarding proto
 keystone_secure_proxy_ssl_header: X-Forwarded-Proto
