@@ -41,11 +41,6 @@ keystone_service_distro_packages:
   - python3-keystone
   - python3-systemd
 
-keystone_apache_distro_packages:
-  - apache2
-  - apache2-utils
-  - libapache2-mod-proxy-uwsgi
-
 keystone_idp_distro_packages:
   - ssl-cert
   - xmlsec1
@@ -62,46 +57,20 @@ keystone_sp_apache_mod_packages:
 keystone_developer_mode_distro_packages:
   - build-essential
 
-keystone_apache_default_sites:
-  - "/etc/apache2/sites-enabled/000-default.conf"
-
-keystone_apache_site_available: "/etc/apache2/sites-available/keystone-httpd.conf"
-keystone_apache_site_enabled: "/etc/apache2/sites-enabled/keystone-httpd.conf"
-keystone_apache_conf: "/etc/apache2/apache2.conf"
-keystone_apache_default_log_folder: "/var/log/apache2"
-keystone_apache_default_log_owner: "root"
-keystone_apache_default_log_grp: "adm"
-keystone_apache_security_conf: "/etc/apache2/conf-available/security.conf"
-
-keystone_apache_configs:
-  - { src: "keystone-ports.conf.j2", dest: "/etc/apache2/ports.conf" }
-  - { src: "keystone-httpd.conf.j2", dest: "/etc/apache2/sites-available/keystone-httpd.conf" }
-  - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/apache2/mods-available/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
-
-keystone_apache_mpms:
-  - name: "mpm_event"
-    state: "{{ (keystone_httpd_mpm_backend == 'event') | ternary('present', 'absent') }}"
-  - name: "mpm_worker"
-    state: "{{ (keystone_httpd_mpm_backend == 'worker') | ternary('present', 'absent') }}"
-  - name: "mpm_prefork"
-    state: "{{ (keystone_httpd_mpm_backend == 'prefork') | ternary('present', 'absent') }}"
+keystone_deprecated_apache_configs:
+  - /etc/apache2/sites-available/keystone-httpd.conf
+  - /etc/apache2/sites-enabled/keystone-httpd.conf
 
 keystone_apache_modules:
-  - name: "ssl"
-    state: "{{ (keystone_backend_ssl | bool) | ternary('present', 'absent') }}"
   - name: "shib"
     state: "{{ keystone_sp_apache_mod_shib | ternary('present', 'absent') }}"
   - name: "auth_openidc"
     state: "{{ keystone_sp_apache_mod_auth_openidc | ternary('present', 'absent') }}"
   - name: "proxy_uwsgi"
     state: "present"
-  - name: "headers"
-    state: "present"
 # This can be enabled when Apache2.5+ is available
 #  - name: "mod_journald"
 #    state: "present
-
-keystone_system_service_name: "{{ (keystone_use_uwsgi | bool) | ternary('keystone-wsgi-public', 'apache2') }}"
 
 keystone_uwsgi_bin: "/usr/bin"
 

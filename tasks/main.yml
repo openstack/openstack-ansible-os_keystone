@@ -120,6 +120,21 @@
   tags:
     - always
 
+- name: Importing keystone_federation_sp_shib_setup tasks
+  ansible.builtin.import_tasks: keystone_federation_sp_shib_setup.yml
+  when:
+    - keystone_sp_apache_mod_shib
+    - not (keystone_use_uwsgi | bool)
+  tags:
+    - keystone-config
+
+- name: Importing keystone_apache tasks
+  ansible.builtin.import_tasks: "keystone_apache.yml"
+  when:
+    - not (keystone_use_uwsgi | bool)
+  tags:
+    - keystone-config
+
 - name: Importing keystone_install tasks
   ansible.builtin.import_tasks: keystone_install.yml
   tags:
@@ -159,14 +174,6 @@
   tags:
     - keystone-config
 
-- name: Importing keystone_federation_sp_shib_setup tasks
-  ansible.builtin.import_tasks: keystone_federation_sp_shib_setup.yml
-  when:
-    - keystone_sp_apache_mod_shib
-    - not (keystone_use_uwsgi | bool)
-  tags:
-    - keystone-config
-
 - name: Create and install SSL certificates
   ansible.builtin.include_role:
     name: pki
@@ -177,19 +184,9 @@
     pki_create_ca: "{{ keystone_pki_create_ca }}"
     pki_authorities: "{{ keystone_pki_ca_certificates }}"
     pki_regen_ca: "{{ keystone_pki_regen_ca }}"
-    pki_create_certificates: "{{ keystone_pki_create_certificates }}"
-    pki_regen_cert: "{{ keystone_pki_regen_cert }}"
-    pki_certificates: "{{ keystone_pki_certificates }}"
     pki_install_certificates: "{{ keystone_pki_install_certificates }}"
   when:
-    - (keystone_backend_ssl | bool) or (keystone_idp['certfile'] is defined)
-  tags:
-    - keystone-config
-
-- name: Importing keystone_apache tasks
-  ansible.builtin.import_tasks: "keystone_apache.yml"
-  when:
-    - not (keystone_use_uwsgi | bool)
+    - keystone_idp['certfile'] is defined
   tags:
     - keystone-config
 

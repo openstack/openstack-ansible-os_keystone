@@ -13,143 +13,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Create apache nogroup group
-  ansible.builtin.group:
-    name: "nogroup"
-    system: "yes"
-
-- name: Create apache nogroup user
-  ansible.builtin.user:
-    name: "nogroup"
-    group: "nogroup"
-    system: "yes"
-    shell: "/bin/false"
-
-- name: Ensure apache log folder exists
-  ansible.builtin.file:
-    dest: "{{ keystone_apache_default_log_folder }}"
-    state: directory
-    owner: "{{ keystone_apache_default_log_owner }}"
-    group: "{{ keystone_apache_default_log_grp }}"
-    mode: "0755"
-
-- name: Ensure apache2 MPM for Debian/Ubuntu
-  community.general.apache2_module:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-    warn_mpm_absent: false
-  with_items: "{{ keystone_apache_mpms | sort(attribute='state') }}"
-  when:
-    - ansible_facts['pkg_mgr'] == 'apt'
-  notify: Restart web server
-
-- name: Ensure apache2 MPM for EL
-  ansible.builtin.copy:
-    content: |
-      LoadModule mpm_{{ keystone_httpd_mpm_backend }}_module modules/mod_mpm_{{ keystone_httpd_mpm_backend }}.so
-
-    dest: /etc/httpd/conf.modules.d/00-mpm.conf
-    mode: "0644"
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-  notify: Restart web server
-
-## NOTE(cloudnull):
-## Module enable/disable process is only functional on Debian
-- name: Enable apache2 modules
-  community.general.apache2_module:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-  with_items: "{{ keystone_apache_modules }}"
-  when:
-    - ansible_facts['pkg_mgr'] == 'apt'
-    - item.state == 'present'
-  notify:
-    - Restart web server
-
-- name: Place apache2 config files
-  ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  with_items: "{{ keystone_apache_configs }}"
-  notify:
-    - Restart web server
-
-## NOTE(cloudnull):
-## Module enable/disable process is only functional on Debian
-- name: Disable apache2 modules
-  community.general.apache2_module:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-  with_items: "{{ keystone_apache_modules }}"
-  when:
-    - ansible_facts['pkg_mgr'] == 'apt'
-    - item.state == 'absent'
-  notify:
-    - Restart web server
-
-## NOTE(andymccr):
-## We need to enable a module for httpd on RedHat/CentOS using LoadModule inside conf files
-- name: Enable/disable proxy_uwsgi_module
-  ansible.builtin.lineinfile:
-    dest: "/etc/httpd/conf.modules.d/00-proxy.conf"
-    line: "LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so"
-    state: "present"
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-  notify:
-    - Restart web server
-
-- name: Disable default apache site
+- name: Clean-up old vhost files
   ansible.builtin.file:
     path: "{{ item }}"
-    state: "absent"
-  with_items: "{{ keystone_apache_default_sites }}"
-  notify:
-    - Restart web server
+    state: absent
+  loop: "{{ keystone_deprecated_apache_configs }}"
 
-- name: Enabled keystone vhost
-  ansible.builtin.file:
-    src: "{{ keystone_apache_site_available }}"
-    dest: "{{ keystone_apache_site_enabled }}"
-    state: "link"
-  when:
-    - keystone_apache_site_available is defined
-    - keystone_apache_site_enabled is defined
-  notify:
-    - Restart web server
-
-- name: Ensure Apache ServerName
-  ansible.builtin.lineinfile:
-    dest: "{{ keystone_apache_conf }}"
-    line: "ServerName {{ ansible_facts['hostname'] }}"
-  notify:
-    - Restart web server
-
-- name: Ensure Apache ServerTokens
-  ansible.builtin.lineinfile:
-    dest: "{{ keystone_apache_security_conf }}"
-    regexp: "^ServerTokens"
-    line: "ServerTokens {{ keystone_apache_servertokens }}"
-  notify:
-    - Restart web server
-
-- name: Ensure Apache ServerSignature
-  ansible.builtin.lineinfile:
-    dest: "{{ keystone_apache_security_conf }}"
-    regexp: "^ServerSignature"
-    line: "ServerSignature {{ keystone_apache_serversignature }}"
-  notify:
-    - Restart web server
-
-- name: Remove Listen from Apache config
-  ansible.builtin.lineinfile:
-    dest: "{{ keystone_apache_conf }}"
-    regexp: "^(Listen.*)"
-    backrefs: true
-    line: "#\\1"
-  notify:
-    - Restart web server
+- name: Including HTTPD role
+  ansible.builtin.import_role:
+    name: httpd
+  vars:
+    httpd_pki_dir: "{{ keystone_pki_dir }}"
+    httpd_pki_setup_host: "{{ keystone_pki_setup_host }}"
+    httpd_ssl_protocol: "{{ keystone_ssl_protocol }}"
+    httpd_ssl_cipher_suite_tls12: "{{ keystone_ssl_cipher_suite_tls12 }}"
+    httpd_ssl_cipher_suite_tls13: "{{ keystone_ssl_cipher_suite_tls13 }}"
+    httpd_pki_regen_cert: "{{ keystone_pki_regen_cert }}"
+    httpd_extra_packages: "{{ keystone_sp_apache_mod_packages | selectattr('state', 'eq', 'present') | map(attribute='name') }}"
+    httpd_extra_modules: "{{ keystone_apache_modules }}"
+    httpd_vhosts:
+      - name: openstack_keystone
+        address: "{{ keystone_web_server_bind_address }}"
+        port: "{{ keystone_service_port }}"
+        log_level: "{{  keystone_apache_log_level }}"
+        log_format: "{{ keystone_apache_custom_log_format }}"
+        server_name: "{{ ansible_facts['hostname'] }}"
+        headers:
+          - 'Header set X-Content-Type-Options "nosniff"'
+          - 'Header set X-XSS-Protection "1; mode=block"'
+          - >-
+            Header set Content-Security-Policy "default-src 'self' https: wss:;"
+          - >-
+            {% set scp_script_src = "script-src 'sha256-oBahlBFQem+nMs1JwgcBB03Hy8nRh5e8qEGTOcxmAuM=';" -%}
+            {{ (keystone_sp != {}) | ternary('Header set Content-Security-Policy "' ~ scp_script_src ~ '"', '') }}
+          - "Header set X-Frame-Options {{ keystone_x_frame_options | default('DENY') }}"
+        options: |-
+          {% set options = _keystone_httpd_base_options %}
+          {% if keystone_sp_apache_mod_auth_openidc %}
+          {%   set _ = options.extend(_keystone_httpd_openidc_options) %}
+          {% endif %}
+          {% if keystone_sp_apache_mod_shib %}
+          {%   set _ = options.extend(_keystone_httpd_shib_options) %}
+          {% endif %}
+          {% set _ = options.append('ProxyPass / uwsgi://127.0.0.1:' ~ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] ~ '/') %}
+          {{ options }}
+        locations: |-
+          {% set locations = [] %}
+          {% if keystone_sp_apache_mod_auth_openidc %}
+          {%   set _ = locations.extend(_keystone_httpd_openidc_locations) %}
+          {% endif %}
+          {% if keystone_sp_apache_mod_shib %}
+          {%   set _ = locations.extend(_keystone_httpd_shib_locations) %}
+          {% endif %}
+          {{ locations }}
+        directories: "{{ (keystone_sp != {}) | ternary(_keystone_httpd_sp_directories, []) }}"
+        ssl: "{{ keystone_backend_ssl | ternary(_keystone_httpd_vhost_ssl, false) }}"
+  tags:
+    - horizon-install
+    - horizon-config
+    - httpd

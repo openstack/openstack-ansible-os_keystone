@@ -13,33 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# NOTE(noonedeadpunk): Handler with the same name is triggered from the http role
 - name: Restart web server
-  ansible.builtin.service:
-    name: "{{ keystone_system_service_name }}"
-    enabled: true
-    state: restarted
-    daemon_reload: "{{ (ansible_facts['service_mgr'] == 'systemd') | ternary('yes', omit) }}"
-  register: _restart
-  until: _restart is success
-  retries: 5
-  delay: 2
-  listen:
-    - "venv changed"
-
-- name: Wait for web server to complete starting
-  ansible.builtin.wait_for:
-    host: "{{ keystone_web_server_bind_address }}"
-    port: "{{ item }}"
-    timeout: 25
-    delay: 10
-  with_items:
-    - "{{ keystone_service_port }}"
-  register: _wait_check
-  until: _wait_check is success
-  retries: 5
-  listen:
-    - "venv changed"
-    - "Restart web server"
+  ansible.builtin.meta: noop
+  when: false
 
 - name: Stop uWSGI
   ansible.builtin.service:
@@ -82,6 +59,7 @@
   listen:
     - "venv changed"
     - "Restart uWSGI"
+    - "Start uWSGI"
 
 - name: Restart Shibd
   ansible.builtin.service:

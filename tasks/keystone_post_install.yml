@@ -38,7 +38,6 @@
     config_type: "ini"
   notify:
     - Restart uWSGI
-    - Restart web server
 
 - name: Implement policy.yaml if there are overrides configured
   openstack.config_template.config_template:
@@ -92,7 +91,6 @@
   with_items: "{{ keystone_core_files }}"
   notify:
     - Restart uWSGI
-    - Restart web server
 
 - name: Cleanup fetched temp files
   ansible.builtin.file:
