@@ -582,7 +582,7 @@ keystone_services:
   keystone-wsgi-public:
     group: keystone_all
     wsgi_app: true
-    wsgi_path: "{{ keystone_bin }}/keystone-wsgi-public"
+    wsgi: "keystone.wsgi.api:application"
     uwsgi_overrides: >-
       {{
         (keystone_use_uwsgi | bool) | ternary(
