@@ -2,12 +2,11 @@
 Configure keystone as a federated Service Provider
 ==================================================
 
-In OpenStack-Ansible, the default installation of keystone uses NGINX
-and ``uWSGI``, however when deploying federation we instead use Apache
-with ``uWSGI``.
-The additional configuration of keystone as a federation service provider
-adds Apache ``mod_shib`` or ``mod_auth_openidc`` and configures it to
-respond to authentication specific request locations from a client.
+In OpenStack-Ansible, the default installation of keystone uses Apache
+with ``uWSGI``. The additional configuration of keystone as a federation
+service provider adds Apache ``mod_shib`` or ``mod_auth_openidc`` and
+configures it to respond to authentication specific request locations
+from a client.
 
 .. note::
 
@@ -404,3 +403,15 @@ with multiple instances of keystone. The OIDC authentication session
 state is persisted in memcached to allow different phases of the
 authentication flow to be handled by different keystone instances
 due to the round-robin behaviour of the loadbalancer.
+
+.. note::
+
+   Before launching the playbook, make sure that the vhosts are already set
+   from the Horizon side. If they are not, configure them first to avoid
+   errors during deployment.
+
+You can set it like this:
+
+.. code-block:: bash
+
+   openstack-ansible openstack.osa.horizon --tags horizon-config
