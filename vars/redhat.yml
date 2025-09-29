@@ -39,9 +39,7 @@ keystone_idp_distro_packages:
   - xmlsec1
 
 # From 2.4.11, mod_auth_openidc ignores X-Forwarded headers unless explicitly configured
-# In Rocky Linux 9, max. version is mod_auth_openidc-2.4.10-*, in Rocky Linux 10 is mod_auth_openidc-2.4.15-*
-_keystone_sp_apache_mod_auth_openidc_gte_2_4_11: >-
-  {{ (ansible_facts['distribution'] == 'Rocky' and ansible_facts['distribution_major_version'] == '9') | ternary(false, true) }}
+_keystone_sp_apache_mod_auth_openidc_gte_2_4_11: true
 
 keystone_sp_apache_mod_packages:
   - name: shibboleth
