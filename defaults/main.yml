@@ -35,8 +35,8 @@ keystone_install_method: "{{ service_install_method | default('source') }}"
 keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 # Centos shibboleth repository options
-keystone_centos_shibboleth_mirror: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/"
-keystone_centos_shibboleth_key: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7//repodata/repomd.xml.key"
+keystone_centos_shibboleth_mirror: "https://shibboleth.net/cgi-bin/mirrorlist.cgi/rockylinux{{ ansible_facts['distribution_major_version'] }}"
+keystone_centos_shibboleth_key: "https://shibboleth.net/downloads/service-provider/RPMS/cantor.repomd.xml.key"
 
 # Role standard API override this option in the OS variable files
 keystone_shibboleth_repo: {}
