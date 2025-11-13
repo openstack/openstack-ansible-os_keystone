@@ -42,6 +42,7 @@ keystone_service_distro_packages:
   - python3-systemd
 
 keystone_idp_distro_packages:
+  - shibboleth-sp-utils
   - ssl-cert
   - xmlsec1
 
