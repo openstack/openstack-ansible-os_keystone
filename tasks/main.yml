@@ -100,16 +100,24 @@
   tags:
     - always
 
-- name: Importing keystone_federation_sp_shib_setup tasks
-  ansible.builtin.import_tasks: keystone_federation_sp_shib_setup.yml
+- name: Including keystone_federation_sp_shib_setup tasks
+  ansible.builtin.include_tasks:
+    file: keystone_federation_sp_shib_setup.yml
+    apply:
+      tags:
+        - keystone-config
   when:
     - keystone_sp_apache_mod_shib
     - not (keystone_use_uwsgi | bool)
   tags:
     - keystone-config
 
-- name: Importing keystone_apache tasks
-  ansible.builtin.import_tasks: "keystone_apache.yml"
+- name: Including keystone_apache tasks
+  ansible.builtin.include_tasks:
+    file: "keystone_apache.yml"
+    apply:
+      tags:
+        - keystone-config
   when:
     - not (keystone_use_uwsgi | bool)
   tags:
@@ -133,23 +141,35 @@
     - keystone-config
     - post-install
 
-- name: Importing keystone_fernet tasks
-  ansible.builtin.import_tasks: keystone_fernet.yml
+- name: Including keystone_fernet tasks
+  ansible.builtin.include_tasks:
+    file: keystone_fernet.yml
+    apply:
+      tags:
+        - keystone-config
   when:
     - "'fernet' in keystone_token_provider"
     - keystone_service_setup | bool
   tags:
     - keystone-config
 
-- name: Importing keystone_db_sync tasks
-  ansible.builtin.import_tasks: keystone_db_sync.yml
+- name: Including keystone_db_sync tasks
+  ansible.builtin.include_tasks:
+    file: keystone_db_sync.yml
+    apply:
+      tags:
+        - keystone-config
   when:
     - "keystone_database_enabled | bool"
   tags:
     - keystone-config
 
-- name: Importing keystone_credential tasks
-  ansible.builtin.import_tasks: keystone_credential.yml
+- name: Including keystone_credential tasks
+  ansible.builtin.include_tasks:
+    file: keystone_credential.yml
+    apply:
+      tags:
+        - keystone-config
   when: keystone_service_setup | bool
   tags:
     - keystone-config
@@ -254,7 +274,11 @@
     - always
 
 - name: Including keystone_ldap_setup tasks
-  ansible.builtin.import_tasks: keystone_ldap_setup.yml
+  ansible.builtin.include_tasks:
+    file: keystone_ldap_setup.yml
+    apply:
+      tags:
+        - keystone-config
   when:
     - keystone_service_setup | bool
     - keystone_ldap != {}
