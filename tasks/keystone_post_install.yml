@@ -39,7 +39,7 @@
   notify:
     - Restart uWSGI
 
-- name: Implement policy.yaml if there are overrides configured
+- name: Place policy.yaml file
   openstack.config_template.config_template:
     content: "{{ keystone_policy_overrides }}"
     dest: "/etc/keystone/policy.yaml"
@@ -47,17 +47,6 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
     config_type: yaml
-  when:
-    - keystone_policy_overrides | length > 0
-  tags:
-    - keystone-policy-override
-
-- name: Remove legacy policy.yaml file
-  ansible.builtin.file:
-    path: "/etc/keystone/policy.yaml"
-    state: absent
-  when:
-    - keystone_policy_overrides | length == 0
   tags:
     - keystone-policy-override
 
