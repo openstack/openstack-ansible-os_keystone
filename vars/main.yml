@@ -78,6 +78,16 @@ _keystone_cache_backend_package: |-
   {%- endfor %}
   oslo.cache[{{ oslo.backend }}]
 
+keystone_sp_apache_mod_shib: >-
+  {{
+    (
+      keystone_sp != {} and (keystone_sp.apache_mod is undefined or (
+        keystone_sp.apache_mod is defined and keystone_sp.apache_mod != 'mod_auth_openidc'))
+    )
+  }}
+keystone_sp_apache_mod_auth_openidc: >-
+  {{ (keystone_sp != {} and keystone_sp.apache_mod is defined and keystone_sp.apache_mod == 'mod_auth_openidc') }}
+
 _keystone_httpd_vhost_ssl: |-
   {% set ssl_options = {} %}
   {% if (keystone_user_ssl_cert is defined and keystone_user_ssl_cert) and (keystone_user_ssl_key is defined and keystone_user_ssl_key) %}

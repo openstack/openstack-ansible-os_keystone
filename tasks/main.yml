@@ -51,26 +51,6 @@
   tags:
     - always
 
-- name: Fact for apache module shibboleth to be installed
-  ansible.builtin.set_fact:
-    keystone_sp_apache_mod_shib: >-
-      {{
-        (keystone_sp != {} and (keystone_sp.apache_mod is undefined or (
-          keystone_sp.apache_mod is defined and keystone_sp.apache_mod != 'mod_auth_openidc'))
-        ) | ternary('true', 'false')
-      }}
-  tags:
-    - always
-
-- name: Fact for apache module mod_auth_openidc to be installed
-  ansible.builtin.set_fact:
-    keystone_sp_apache_mod_auth_openidc:
-      "{{ (keystone_sp != {} and
-      keystone_sp.apache_mod is defined and keystone_sp.apache_mod == 'mod_auth_openidc')
-      | ternary('true', 'false') }}"
-  tags:
-    - always
-
 - name: Including osa.db_setup role
   ansible.builtin.include_role:
     name: openstack.osa.db_setup
