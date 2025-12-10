@@ -26,10 +26,9 @@ provide your own certificates by using the following Ansible variables in
    If you are providing certificates, keys, and CA file for a
    CA without chain of trust (or an invalid/self-generated ca), the variables
    ``keystone_service_internaluri_insecure`` and
-   ``keystone_service_adminuri_insecure`` should be set to ``True``.
+   ``keystone_service_adminuri_insecure`` should be set to ``true``.
 
-Refer to :deploy_guide:`Securing services with SSL certificates
-<app-advanced-config-sslcertificates.html>`
+Refer to `Securing services with SSL certificates <https://docs.openstack.org/openstack-ansible/latest/user/security/ssl-certificates.html>`_
 for more information on these configuration options and how you can provide
 your own certificates and keys to use with keystone.
 
@@ -96,15 +95,13 @@ variable during deployment:
 
 .. code-block:: yaml
 
-    horizon_keystone_multidomain_support: True
+    horizon_keystone_multidomain_support: true
 
 Enabling multi-domain support in horizon adds the ``Domain`` input field on
 the horizon login page and it adds other domain-specific features in the
 keystone section.
 
 More details regarding valid configuration for the LDAP Identity backend can
-be found in the `Keystone Developer Documentation`_ and the
-`OpenStack Administrator Guide`_.
+be found in the `Keystone Administrator Guide`_.
 
-.. _Keystone Developer Documentation: https://docs.openstack.org/keystone/latest/configuration.html#configuring-the-ldap-identity-provider
-.. _OpenStack Administrator Guide: https://docs.openstack.org/keystone/latest/admin/identity-integrate-with-ldap.html
+.. _Keystone Administrator Guide: https://docs.openstack.org/keystone/latest/admin/configuration.html#integrate-identity-with-ldap
