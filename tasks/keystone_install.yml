@@ -45,7 +45,7 @@
     gpgcheck: true
   when:
     - ansible_facts['pkg_mgr'] == 'dnf'
-    - keystone_sp != {}
+    - keystone_sp_apache_mod_shib | bool
 
 - name: Install distro packages
   ansible.builtin.package:
