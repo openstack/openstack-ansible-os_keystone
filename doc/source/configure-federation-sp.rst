@@ -13,7 +13,7 @@ from a client.
    There are alternative methods of implementing
    federation, but at this time only SAML2-based federation using
    the Shibboleth SP via mod_shib or OIDC-based federation using
-   mod_auth_openidc are supported in Openstack-Ansible.
+   mod_auth_openidc are supported in OpenStack-Ansible.
    Currently only one of these apache modules is supported at a time,
    with a single trusted IdP in the keystone_sp.trusted_idp_list.
 
