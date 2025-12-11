@@ -404,6 +404,15 @@ state is persisted in memcached to allow different phases of the
 authentication flow to be handled by different keystone instances
 due to the round-robin behaviour of the loadbalancer.
 
+After making changes to the ``keystone_sp`` configuration or any
+federation-related settings, ensure that they are applied to all
+Keystone containers. To do this, run the Keystone playbook
+with ``keystone-config`` tag:
+
+.. code-block:: bash
+
+   # openstack-ansible openstack.osa.keystone --tags keystone-config
+
 .. note::
 
    Before launching the playbook, make sure that the vhosts are already set

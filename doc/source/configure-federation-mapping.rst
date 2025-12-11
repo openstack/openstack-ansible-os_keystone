@@ -106,6 +106,17 @@ is not in the standard Shibboleth attribute map (see
 ``/etc/shibboleth/attribute-map.xml`` in the keystone containers), the configuration
 of the IdP has extra mapping through the ``attributes`` dictionary.
 
+After creating or modifying federation mappings or the ``federated_identities``
+list, configuration must be applied to all Keystone containers.
+
+To ensure that the new mappings, domains, groups, projects and roles are
+created or changed correctly across the deployment, run the Keystone playbook
+with ``keystone-config`` tag:
+
+.. code-block:: bash
+
+   # openstack-ansible openstack.osa.keystone --tags keystone-config
+
 The ``mapping`` dictionary is a YAML representation similar to the
 keystone mapping property which Ansible uploads. The above mapping
 produces the following in keystone.
