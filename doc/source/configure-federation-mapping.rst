@@ -161,3 +161,23 @@ assignments in the keystone backend will be looked up alongside the
 assignments made in the mapping.
 The user's ID and Name (federation uses the same value for both properties)
 for all OpenStack services is the value of ``upn``.
+
+After configuring the federation attribute mapping in Keystone, you can
+optionally configure the Horizon dashboard so that WebSSO redirects users
+to the appropriate Identity Provider (IdP) and protocol.
+The WEBSSO_IDP_MAPPING setting tells Horizon which IdP and protocol to use
+based on the authentication option selected on the login page.
+Add the following to your user_variables.yml:
+
+.. code-block:: yaml
+
+   horizon_extra_local_settings:
+     WEBSSO_IDP_MAPPING: >
+       {"MY-SSO": ("<idp_id>", "<protocol_id>")}
+
+Then apply the updated Horizon configuration:
+
+.. code-block:: shell-session
+
+   # openstack-ansible openstack.osa.horizon --tags horizon-config
+
