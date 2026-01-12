@@ -13,13 +13,13 @@
 
     <StorageService type="MEMCACHE" id="mc" prefix="shibboleth2:">
         <Hosts>
-            {{ keystone_memcached_servers }}
+            {{ keystone_cache_servers }}
         </Hosts>
     </StorageService>
 
     <StorageService type="MEMCACHE" id="mc-ctx" prefix="shibboleth2:" buildMap="1">
         <Hosts>
-            {{ keystone_memcached_servers }}
+            {{ keystone_cache_servers }}
         </Hosts>
     </StorageService>
 

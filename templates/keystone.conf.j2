@@ -61,12 +61,7 @@ transport_url = {{ keystone_oslomsg_notify_transport }}://{% for host in keyston
 [cache]
 backend = {{ keystone_cache_backend }}
 {% if keystone_cache_backend in keystone_cache_backend_map['dogpile'] %}
-# FIXME(lbragstad): Some strange behaviors have been reported when using
-# multiple memcached instances with backend_argument. This has been documented
-# in https://bugs.launchpad.net/oslo.cache/+bug/1743036
-# For the time being, memcache_servers works with a single memcached instance
-# and multiple instances.
-memcache_servers = {{ keystone_cache_servers | join(',') }}
+memcache_servers = {{ keystone_cache_servers }}
 {% endif %}
 config_prefix = cache.keystone
 enabled = true
