@@ -182,7 +182,6 @@ keystone_role_name: admin
 ## Admin info
 keystone_admin_user_name: admin
 keystone_admin_tenant_name: admin
-keystone_admin_description: Admin Tenant
 
 ## Service Type and Data
 keystone_service_setup: true
