@@ -39,7 +39,8 @@
   ansible.builtin.yum_repository:
     name: "shibboleth"
     description: "shibboleth Repo"
-    baseurl: "{{ keystone_centos_shibboleth_mirror }}"
+    baseurl: "{{ (keystone_centos_shibboleth_mirror | length > 0) | ternary(keystone_centos_shibboleth_mirror, omit) }}"
+    mirrorlist: "{{ (keystone_centos_shibboleth_mirrorlist | length > 0) | ternary(keystone_centos_shibboleth_mirrorlist, omit) }}"
     gpgkey: "{{ keystone_centos_shibboleth_key }}"
     gpgcheck: true
   when:

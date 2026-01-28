@@ -35,7 +35,10 @@ keystone_install_method: "{{ service_install_method | default('source') }}"
 keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 # Centos shibboleth repository options
-keystone_centos_shibboleth_mirror: "https://shibboleth.net/cgi-bin/mirrorlist.cgi/rockylinux{{ ansible_facts['distribution_major_version'] }}"
+# If you want to use a mirror, instead of the mirrorlist, re-define as
+# keystone_centos_shibboleth_mirrorlist: ''
+keystone_centos_shibboleth_mirror: ''
+keystone_centos_shibboleth_mirrorlist: "https://shibboleth.net/cgi-bin/mirrorlist.cgi/rockylinux{{ ansible_facts['distribution_major_version'] }}"
 keystone_centos_shibboleth_key: "https://shibboleth.net/downloads/service-provider/RPMS/cantor.repomd.xml.key"
 
 # Role standard API override this option in the OS variable files
