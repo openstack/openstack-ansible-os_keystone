@@ -90,9 +90,9 @@ keystone_sp_apache_mod_auth_openidc: >-
 
 _keystone_httpd_vhost_ssl: |-
   {% set ssl_options = {} %}
-  {% if (keystone_user_ssl_cert is defined and keystone_user_ssl_cert) and (keystone_user_ssl_key is defined and keystone_user_ssl_key) %}
+  {% if keystone_user_ssl_cert | length > 0 and keystone_user_ssl_key | length > 0 %}
   {%   set _ = ssl_options.update({'cert': keystone_user_ssl_cert, 'key': keystone_user_ssl_key}) %}
-  {%   if keystone_user_ssl_ca_cert is defined and keystone_user_ssl_ca_cert %}
+  {%   if keystone_user_ssl_ca_cert is defined and keystone_user_ssl_ca_cert | length > 0 %}
   {%     set _ = ssl_options.update({'ca': keystone_user_ssl_ca_cert}) %}
   {%   endif %}
   {% else %}
