@@ -62,7 +62,7 @@
   with_items: "{{ keystone_service_exists.results }}"
   when:
     - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool)"
-    - "(item.status['LoadState'] == 'loaded' | bool)"
+    - item.status['LoadState'] == 'loaded'
   notify:
     - Restart uWSGI
 
