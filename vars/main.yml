@@ -181,10 +181,10 @@ _keystone_httpd_openidc_locations:
     options: "{{ _keystone_httpd_openidc_location_options }}"
 
 _keystone_httpd_shib_locations:
-  - path: /CShibboleth.sso
+  - path: /Shibboleth.sso
     options:
       - SetHandler shib
-  - path: /v3/auth/OS-FEDERATION/websso/saml2\
+  - path: /v3/auth/OS-FEDERATION/websso/saml2
     options:
       - AuthType shibboleth
       - ShibRequestSetting requireSession 1
