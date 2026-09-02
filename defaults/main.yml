@@ -542,7 +542,7 @@ keystone_ceilometer_enabled: "{{ (groups['ceilometer_all'] is defined) and (grou
 
 # Common pip packages
 keystone_pip_packages:
-  - "git+{{ keystone_git_repo }}@{{ keystone_git_install_branch }}#egg=keystone"
+  - "keystone@git+{{ keystone_git_repo }}@{{ keystone_git_install_branch }}"
   - ldappool
   - osprofiler
   - PyMySQL
