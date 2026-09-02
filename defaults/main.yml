@@ -114,9 +114,17 @@ keystone_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 keystone_galera_user: keystone
 keystone_galera_database: keystone
 keystone_galera_port: "{{ galera_port | default('3306') }}"
+keystone_galera_readonly_address: "{{ keystone_galera_address }}"
+keystone_galera_readonly_connection_enabled: "{{ openstack_galera_readonly_connection_enabled | default(false) }}"
+keystone_galera_readonly_port: "{{ galera_readonly_port | default('3308') }}"
+keystone_galera_synchronous_reader: "{{ not keystone_galera_readonly_connection_enabled }}"
 keystone_database_connection_string: >-
   mysql+pymysql://{{ keystone_galera_user }}:{{ keystone_container_mysql_password }}@{{ keystone_galera_address }}:{{ keystone_galera_port }}/{{
     keystone_galera_database }}?charset=utf8{% if keystone_galera_use_ssl | bool %}&ssl_verify_cert=true{%
+      if keystone_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ keystone_galera_ssl_ca_cert }}{% endif %}{% endif %}
+keystone_database_slave_connection_string: >-
+  mysql+pymysql://{{ keystone_galera_user }}:{{ keystone_container_mysql_password }}@{{ keystone_galera_readonly_address }}:{{
+    keystone_galera_readonly_port }}/{{ keystone_galera_database }}?charset=utf8{% if keystone_galera_use_ssl | bool %}&ssl_verify_cert=true{%
       if keystone_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ keystone_galera_ssl_ca_cert }}{% endif %}{% endif %}
 ## Database SSL
 keystone_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"

@@ -81,6 +81,11 @@ methods = {{ keystone_auth_methods }}{% if keystone_sp_apache_mod_shib %},saml2{
 {% if keystone_database_enabled | bool %}
 [database]
 connection = {{ keystone_database_connection_string }}
+{%   if keystone_galera_readonly_connection_enabled | bool %}
+slave_connection = {{ keystone_database_slave_connection_string }}
+synchronous_reader = {{ keystone_galera_synchronous_reader }}
+mysql_wsrep_sync_wait = {{ keystone_galera_synchronous_reader | bool | ternary(0, 1) }}
+{%   endif %}
 max_overflow = {{ keystone_db_max_overflow }}
 max_pool_size = {{ keystone_db_max_pool_size }}
 pool_timeout = {{ keystone_db_pool_timeout }}
