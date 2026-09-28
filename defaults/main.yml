@@ -34,7 +34,7 @@ keystone_package_state: "{{ package_state | default('latest') }}"
 keystone_install_method: "{{ service_install_method | default('source') }}"
 keystone_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
-# Centos shibboleth repository options
+# CentOS shibboleth repository options
 # If you want to use a mirror, instead of the mirrorlist, re-define as
 # keystone_centos_shibboleth_mirrorlist: ''
 keystone_centos_shibboleth_mirror: ''
@@ -355,11 +355,13 @@ keystone_ldap: {}
 keystone_ldap_domain_config_dir: /etc/keystone/domains
 
 ## Policy vars
-# Provide a list of access controls to update the default policy.json with. These changes will be merged
-# with the access controls in the default policy.json. E.g.
+# Provide a list of access controls to update the default policy.yaml with. These changes will be merged
+# with the access controls in the default policy.yaml. E.g.
 # keystone_policy_overrides:
-#   identity:create_region: "rule:admin_required"
-#   identity:update_region: "rule:admin_required"
+#   create_user: "role:admin"
+#   delete_user: "role:admin"
+#   list_projects: "(role:reader and project_id:%(project_id)s) or role:admin or role:service"
+keystone_policy_overrides: {}
 
 ## Federation
 
@@ -571,7 +573,6 @@ shibboleth_key_user_file_path: "/etc/openstack_deploy/keystone/sp-key.pem"
 # The contents of these are templated over the default files.
 keystone_keystone_conf_overrides: {}
 keystone_keystone_default_conf_overrides: {}
-keystone_policy_overrides: {}
 
 keystone_required_secrets:
   - keystone_auth_admin_password
