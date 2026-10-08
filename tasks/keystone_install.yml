@@ -131,10 +131,3 @@
             ('keystone' not in ansible_local['openstack_ansible']) or
             ('need_db_expand' not in ansible_local['openstack_ansible']['keystone']) or
             ('need_db_contract' not in ansible_local['openstack_ansible']['keystone'])
-
-- name: Create WSGI symlinks
-  ansible.builtin.file:
-    src: "{{ keystone_bin }}/keystone-wsgi-public"
-    dest: "/var/www/cgi-bin/keystone/main"
-    state: link
-    force: true
