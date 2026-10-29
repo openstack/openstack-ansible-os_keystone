@@ -81,6 +81,9 @@ keystone_revocation_driver: sql
 keystone_revocation_cache_time: 3600
 keystone_revocation_expiration_buffer: 1800
 
+## Fernet and Credential key rotation
+keystone_rotate_keys: false
+
 ## Fernet config vars
 keystone_fernet_tokens_key_repository: "/etc/keystone/fernet-keys"
 keystone_fernet_tokens_max_active_keys: 7

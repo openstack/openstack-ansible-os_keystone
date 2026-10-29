@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added variable ``keystone_rotate_keys`` to enforce fernet and credentials
+    rotation on the ``openstack.osa.keystone`` playbook run.
+fixes:
+  - |
+    Running ``os_keystone`` role will not longer unconditionally rotate
+    fernet/credential keys on each run, which can cause abrupt token invalidation
+    when role is executed several times in a row.

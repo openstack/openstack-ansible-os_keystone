@@ -73,4 +73,6 @@
                                        --keystone-group "{{ keystone_system_group_name }}"
   become: true
   become_user: "{{ keystone_system_user_name }}"
-  when: _fernet_keys.stat.exists
+  when:
+    - _fernet_keys.stat.exists
+    - keystone_rotate_keys | bool
