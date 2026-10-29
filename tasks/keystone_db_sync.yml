@@ -19,7 +19,7 @@
   become_user: "{{ keystone_system_user_name }}"
   register: keystone_db_sync_check
   failed_when: "keystone_db_sync_check.rc == 1"
-  changed_when: "keystone_db_sync_check.rc not in [2, 3, 4]"
+  changed_when: "keystone_db_sync_check.rc != 0"
   run_once: true
 
 - name: Set the db sync local facts
@@ -68,9 +68,10 @@
 
 - name: Perform a Keystone DB sync expand
   ansible.builtin.command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
-  changed_when: false
+  changed_when: true
   become: true
   become_user: "{{ keystone_system_user_name }}"
+  register: dbsync_expand
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
   run_once: true
@@ -78,11 +79,27 @@
 
 - name: Perform a Keystone DB sync contract
   ansible.builtin.command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
-  changed_when: false
+  changed_when: true
   become: true
   become_user: "{{ keystone_system_user_name }}"
+  register: dbsync_contract
   when:
     - "(keystone_all_software_updated | default('no')) | bool"
     - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"
   run_once: true
   notify: flush cache
+
+- name: Disable the need for any further db migrations
+  community.general.ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "{{ item.option }}"
+    value: "False"
+    mode: "0644"
+  when:
+    - item.condition | default(false)
+  loop:
+    - option: "need_db_contract"
+      condition: "{{ dbsync_contract is changed }}"
+    - option: "need_db_expand"
+      condition: "{{ dbsync_expand is changed }}"
