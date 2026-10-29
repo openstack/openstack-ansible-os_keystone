@@ -24,7 +24,7 @@
         state: present
         name: "{{ item.domain }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: item.domain is defined
       no_log: true
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
@@ -36,7 +36,7 @@
         name: "{{ item.project }}"
         domain_id: "{{ item.domain }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: item.project is defined
       no_log: true
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
@@ -50,7 +50,7 @@
         default_project: "{{ item.project }}"
         domain: "{{ item.domain | default('default') }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: >
         item.user is defined and
         item.password is defined and
@@ -65,7 +65,7 @@
         name: "{{ item.group }}"
         domain_id: "{{ item.domain | default('default') }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: item.group is defined
       no_log: true
@@ -76,7 +76,7 @@
         state: present
         name: "{{ item.role | default('member') }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: >
         item.group is defined and
@@ -91,7 +91,7 @@
         project: "{{ item.project }}"
         role: "{{ item.role | default('member') }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       with_items: "{{ trusted_idp.federated_identities | default([]) }}"
       when: >
         item.group is defined and
@@ -105,7 +105,7 @@
         name: "{{ item.mapping.name }}"
         rules: "{{ item.mapping.rules }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: item.mapping.name is defined
       no_log: true
       with_items: "{{ trusted_idp.protocols | default([]) }}"
@@ -119,7 +119,7 @@
         enabled: true
         domain_id: "{{ trusted_idp.domain_id | default(omit) }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: trusted_idp.name is defined
       no_log: true
 
@@ -131,7 +131,7 @@
         idp_name: "{{ trusted_idp.name }}"
         mapping_id: "{{ item.mapping.name }}"
         interface: admin
-        verify: "{{ keystone_service_adminuri_insecure }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
       when: item.name is defined
       no_log: true
       with_items: "{{ trusted_idp.protocols | default([]) }}"
